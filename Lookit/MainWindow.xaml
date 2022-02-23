@@ -8,13 +8,28 @@
         Title="MainWindow" Height="800" Width="800">
     <StackPanel>
         <StackPanel Orientation="Horizontal">
-            <Button Name="BtnPaste" Click="BtnPaste_Click">hello</Button>
-            <Label>First: </Label>
-            <Label Name="LblPosFirst"/>
-            <Label>Second:</Label>
-            <Label Name="LblPosSecond"/>
+            <Button Name="BtnPaste" Click="BtnPaste_Click">Paste</Button>
+            <Button Name="BtnScale" Click="BtnScale_Click">Set scale</Button>
+            <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
+            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                <Label>Mode:</Label>
+                <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                <Label>First:</Label>
+                <Label Name="LblPosFirst"/>
+                <Label>Second:</Label>
+                <Label Name="LblPosSecond"/>
+
+            </StackPanel>
+            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                <Label>Scale distance:</Label>
+                <TextBox Name="TxtScaleDistance" Width="200"/>
+                <Button Name="BtnUpdateScale" Click="BtnUpdateScale_Click">Update</Button>
+
+            </StackPanel>
         </StackPanel>
-        <ScrollViewer Height="800" Width="800" HorizontalScrollBarVisibility="Visible">
+        <ScrollViewer Height="600" Width="1000" HorizontalScrollBarVisibility="Visible">
             <ContentControl Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
                 <Image Stretch="Uniform" Width="1200" Height="1200" Name="ImgMain"/>
             </ContentControl>
