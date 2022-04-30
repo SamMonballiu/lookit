@@ -11,7 +11,10 @@
             <ColumnDefinition Width=".33*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=LineMeasurements}" />
+        <DockPanel Grid.Column="0" Grid.Row="0">
+            <Button DockPanel.Dock="Top" x:Name="BtnShowDistance" Click="BtnShowDistance_Click" IsEnabled="False">Distance</Button>
+            <ListBox ItemsSource="{Binding Path=LineMeasurements}" x:Name="ListMeasurements" />
+        </DockPanel>
         <StackPanel Grid.Column="1" Grid.Row="0">
             <StackPanel Orientation="Horizontal">
                 <Button Name="BtnPaste" Click="BtnPaste_Click">Paste</Button>
@@ -46,13 +49,21 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
-                        <Image Source="./Assets/test.GIF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
+                        <Image Source="./Assets/test.GIF" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                             </Image.LayoutTransform>
                         </Image>
                     </ContentControl>
-                    <Canvas Opacity="0.5" MouseUp="ImgControl_OnMouseUp" Name="CnvMeasure" Grid.Row="0" Grid.Column="0" Width="1200" Height="1200" Background="Transparent"/>
+                    <Canvas Cursor="Cross" Opacity="0.5" 
+                            MouseUp="ImgControl_OnMouseUp" 
+                            Name="CnvMeasure" 
+                            Grid.Row="0" Grid.Column="0"  
+                            Background="Transparent">
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
+                        </Canvas.LayoutTransform>
+                    </Canvas>
                     
                 </Grid>
             </ScrollViewer>

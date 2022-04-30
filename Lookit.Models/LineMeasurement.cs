@@ -5,25 +5,30 @@ namespace Lookit.Models
 {
     public class LineMeasurement
     {
-        private Point _first;
-        private Point _second;
-
+        public Point Start { get; private set; }
+        public Point End { get; private set; }
+        public double Distance => GetDistance(Start, End);
         public LineMeasurement(Point first, Point second)
         {
-            _first = first;
-            _second = second;
+            Start = first;
+            End = second;
         }
 
         private double GetDistance(Point first, Point second)
             => Math.Sqrt((Math.Pow(first.X - second.X, 2) + Math.Pow(first.Y - second.Y, 2)));
 
-        public double GetScaledDistance(Scale scale)
+        public double? GetScaledDistance(Scale scale)
         {
-            var clickedDistance = GetDistance(_first, _second);
+            if (scale is null)
+            {
+                return null;
+            }
+
+            var clickedDistance = GetDistance(Start, End);
             var measureDistance = clickedDistance * scale.DistanceUnit;
             return measureDistance;
         }
 
-        public override string ToString() => $"({_first.X},{_first.Y}) - ({_second.X},{_second.Y})";
+        public override string ToString() => $"({Start.X},{Start.Y}) - ({End.X},{End.Y}) Dist: {Math.Round(Distance, 2)}";
     }
 }

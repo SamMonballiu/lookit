@@ -36,18 +36,26 @@ namespace Lookit
 
         private Scale _scale;
 
-        private readonly List<LineMeasurement> _lineMeasurements = new List<LineMeasurement>();
+        private LookitMainViewModel Viewmodel() => (DataContext as LookitMainViewModel);
 
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
+            ListMeasurements.SelectionChanged += (o, e) =>
+            {
+                BtnShowDistance.IsEnabled = ListMeasurements.SelectedItem != null;
+                UpdateCanvas();
+            };
+
+            UpdateCanvas();
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
         {
             (DataContext as LookitMainViewModel).ZoomLevel = e.Value;
+            UpdateCanvas();
         }
 
         private void PasteImage()
@@ -99,18 +107,18 @@ namespace Lookit
             {
                 _second = clickPoint;
                 var measurement = new LineMeasurement(_first.Value, _second.Value);
-                (DataContext as LookitMainViewModel).LineMeasurements.Add(measurement);
                 switch (Mode)
                 {
                     case Mode.Measure:
-                        var distance = measurement.GetScaledDistance(_scale);
-                        MessageBox.Show(distance.ToString("F"));
+                        Viewmodel().LineMeasurements.Add(measurement);
+                        var distance = measurement.GetScaledDistance(Viewmodel().Scale);
+                        MessageBox.Show(distance?.ToString("F") ?? "No scale set");
                         _first = null;
                         _second = null;
                         break;
                     case Mode.Scale:
                         _second = clickPoint;
-                        _scale = new Scale(_first.Value, _second.Value, double.Parse(TxtScaleDistance.Text));
+                        Viewmodel().SetScale(new Scale(_first.Value, _second.Value, double.Parse(TxtScaleDistance.Text)));
                         _first = null;
                         _second = null;
                         Mode = Mode.Measure;
@@ -119,6 +127,7 @@ namespace Lookit
             }
 
             UpdateLabels();
+            UpdateCanvas();
         }
 
         private void UpdateLabels()
@@ -155,7 +164,7 @@ namespace Lookit
 
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
         {
-            _scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
+            Viewmodel().Scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
         }
 
         private void AddRect()
@@ -171,6 +180,42 @@ namespace Lookit
             CnvMeasure.Children.Add(rect);
         }
 
+        private void UpdateCanvas()
+        {
+            var selected = ListMeasurements.SelectedItem;
+            var scale = Viewmodel().Scale;
+            CnvMeasure.Children.Clear();
+
+            if (scale != null)
+            {
+                AddLine(new LineMeasurement(scale.First, scale.Second), Brushes.Green);
+
+            }
+
+            foreach (var line in Viewmodel().LineMeasurements)
+            {
+                AddLine(line, selected == line ? Brushes.Yellow : Brushes.Red);
+            }
+        }
+
+        private void AddLine(LineMeasurement measurement, SolidColorBrush brush)
+        {
+            var zoomLevel = Viewmodel().ZoomLevel;
+
+            var line = new Line
+            {
+                Stroke = brush,
+                StrokeThickness = Math.Max(1, Math.Round(zoomLevel * 3)),
+                X1 = measurement.Start.X,
+                Y1 = measurement.Start.Y,
+                X2 = measurement.End.X,
+                Y2 = measurement.End.Y,
+                Visibility = Visibility.Visible
+            };
+
+            CnvMeasure.Children.Add(line);
+        }
+
         private void AddEllipse(System.Windows.Point point)
         {
             var ellipse = new Ellipse
@@ -183,6 +228,17 @@ namespace Lookit
             Canvas.SetLeft(ellipse, point.X - 10);
             Canvas.SetTop(ellipse, point.Y - 10);
             CnvMeasure.Children.Add(ellipse);
+        }
+
+        private void BtnShowDistance_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = ListMeasurements.SelectedItem as LineMeasurement;
+            if (selected is null)
+            {
+                return;
+            }
+
+            MessageBox.Show(selected.GetScaledDistance(Viewmodel().Scale)?.ToString() ?? "No scale set");
         }
     }
 }

@@ -29,13 +29,17 @@ namespace Lookit.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        public void SetScale(Scale scale) {
+            Scale = scale;
+            OnPropertyChanged(nameof(Scale));
+        }
 
         public LookitMainViewModel()
         {
             Scale = Scale.Default;
             LineMeasurements = new ObservableCollection<LineMeasurement>()
             {
-                new LineMeasurement(new System.Drawing.Point(5, 5), new System.Drawing.Point(6, 10))
+                new LineMeasurement(new System.Drawing.Point(550, 150), new System.Drawing.Point(60, 100))
             };
         }
     }
