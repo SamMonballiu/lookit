@@ -3,36 +3,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Lookit"
+        xmlns:local="clr-namespace:Lookit" xmlns:usercontrols="clr-namespace:Lookit.UserControls"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="800">
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Name="BtnPaste" Click="BtnPaste_Click">Paste</Button>
-            <Button Name="BtnScale" Click="BtnScale_Click">Set scale</Button>
-            <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
-            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
-                <Label>Mode:</Label>
-                <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
-                <Label>First:</Label>
-                <Label Name="LblPosFirst"/>
-                <Label>Second:</Label>
-                <Label Name="LblPosSecond"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".33*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=LineMeasurements}" />
+        <StackPanel Grid.Column="1" Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <Button Name="BtnPaste" Click="BtnPaste_Click">Paste</Button>
+                <Button Name="BtnScale" Click="BtnScale_Click">Set scale</Button>
+                <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
+                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                    <Label>Mode:</Label>
+                    <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                    <Label>First:</Label>
+                    <Label Name="LblPosFirst"/>
+                    <Label>Second:</Label>
+                    <Label Name="LblPosSecond"/>
 
-            </StackPanel>
-            <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
-                <Label>Scale distance:</Label>
-                <TextBox Name="TxtScaleDistance" Width="200"/>
-                <Button Name="BtnUpdateScale" Click="BtnUpdateScale_Click">Update</Button>
+                </StackPanel>
+                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                    <Label>Scale distance:</Label>
+                    <TextBox Name="TxtScaleDistance" Width="200" Text="{Binding Mode=OneWay, Path=Scale.EnteredDistance}"/>
+                    <Button Name="BtnUpdateScale" Click="BtnUpdateScale_Click">Update</Button>
+                    <usercontrols:ZoomPicker x:Name="zoomPicker" />
 
+                </StackPanel>
             </StackPanel>
+            <ScrollViewer Height="600" Width="1000" HorizontalScrollBarVisibility="Visible">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width=".33*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
+                        <Image Source="./Assets/test.GIF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
+                            <Image.LayoutTransform>
+                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
+                            </Image.LayoutTransform>
+                        </Image>
+                    </ContentControl>
+                    <Canvas Opacity="0.5" MouseUp="ImgControl_OnMouseUp" Name="CnvMeasure" Grid.Row="0" Grid.Column="0" Width="1200" Height="1200" Background="Transparent"/>
+                    
+                </Grid>
+            </ScrollViewer>
         </StackPanel>
-        <ScrollViewer Height="600" Width="1000" HorizontalScrollBarVisibility="Visible">
-            <ContentControl Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
-                <Image Stretch="Uniform" Width="1200" Height="1200" Name="ImgMain"/>
-            </ContentControl>
-        </ScrollViewer>
-    </StackPanel>
+    </Grid>
+    
 </Window>

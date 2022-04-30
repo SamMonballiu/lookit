@@ -1,45 +1,17 @@
-﻿using System;
+﻿using Lookit.Models;
+using Lookit.ViewModels;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Point = System.Drawing.Point;
 
 namespace Lookit
 {
-    public class Scale
-    {
-        public System.Windows.Point First { get; set; }
-        public System.Windows.Point Second { get; set; }
-        private double _enteredDistance;
-        public double EnteredDistance => _enteredDistance;
-        public double ActualDistance 
-            => Math.Sqrt((Math.Pow(First.X - Second.X, 2) + Math.Pow(First.Y - Second.Y, 2)));
-        public double DistanceUnit
-            => EnteredDistance / ActualDistance;
-
-        public Scale(System.Windows.Point first, System.Windows.Point second, double distance)
-        {
-            First = first;
-            Second = second;
-            _enteredDistance = distance;
-        }
-
-        public void SetEnteredDistance(double distance)
-        {
-            _enteredDistance = distance;
-        }
-    }
+    
 
     public enum Mode
     {
@@ -59,19 +31,28 @@ namespace Lookit
 
         public Mode Mode { get; set; } = Mode.None;
 
-        private System.Windows.Point? _first;
-        private System.Windows.Point? _second;
+        private System.Drawing.Point? _first;
+        private System.Drawing.Point? _second;
 
         private Scale _scale;
+
+        private readonly List<LineMeasurement> _lineMeasurements = new List<LineMeasurement>();
 
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this;
+            this.DataContext = new LookitMainViewModel();
+            zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
+        }
+
+        private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
+        {
+            (DataContext as LookitMainViewModel).ZoomLevel = e.Value;
         }
 
         private void PasteImage()
         {
+            
             if (Clipboard.ContainsImage())
             {
                 IDataObject clipboardData = Clipboard.GetDataObject();
@@ -109,7 +90,7 @@ namespace Lookit
                 return;
             }
 
-            var clickPoint = e.GetPosition(ImgMain);
+            var clickPoint = ConvertPoint(e.GetPosition(ImgMain));
             if (_first is null)
             {
                 _first = clickPoint;
@@ -117,10 +98,12 @@ namespace Lookit
             else
             {
                 _second = clickPoint;
+                var measurement = new LineMeasurement(_first.Value, _second.Value);
+                (DataContext as LookitMainViewModel).LineMeasurements.Add(measurement);
                 switch (Mode)
                 {
                     case Mode.Measure:
-                        var distance = GetScaledDistance(_first.Value, clickPoint);
+                        var distance = measurement.GetScaledDistance(_scale);
                         MessageBox.Show(distance.ToString("F"));
                         _first = null;
                         _second = null;
@@ -165,19 +148,41 @@ namespace Lookit
             UpdateLabels();
         }
 
-        private double GetDistance(System.Windows.Point first, System.Windows.Point second)
-            => Math.Sqrt((Math.Pow(first.X - second.X, 2) + Math.Pow(first.Y - second.Y, 2)));
-
-        private double GetScaledDistance(System.Windows.Point first, System.Windows.Point second)
+        private System.Drawing.Point ConvertPoint(System.Windows.Point point)
         {
-            var clickedDistance = GetDistance(first, second);
-            var measureDistance = clickedDistance * _scale.DistanceUnit;
-            return measureDistance;
+            return new System.Drawing.Point() { X = Convert.ToInt32(point.X), Y = Convert.ToInt32(point.Y) };
         }
 
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
         {
             _scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
+        }
+
+        private void AddRect()
+        {
+            System.Windows.Shapes.Rectangle rect;
+            rect = new System.Windows.Shapes.Rectangle();
+            rect.Stroke = new SolidColorBrush(Colors.Black);
+            rect.Fill = new SolidColorBrush(Colors.Black);
+            rect.Width = 200;
+            rect.Height = 200;
+            Canvas.SetLeft(rect, 0);
+            Canvas.SetTop(rect, 0);
+            CnvMeasure.Children.Add(rect);
+        }
+
+        private void AddEllipse(System.Windows.Point point)
+        {
+            var ellipse = new Ellipse
+            {
+                Stroke = new SolidColorBrush(Colors.DarkRed),
+                Fill = new SolidColorBrush(Colors.Red),
+                Width = 20,
+                Height = 20
+            };
+            Canvas.SetLeft(ellipse, point.X - 10);
+            Canvas.SetTop(ellipse, point.Y - 10);
+            CnvMeasure.Children.Add(ellipse);
         }
     }
 }
