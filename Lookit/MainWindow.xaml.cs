@@ -107,12 +107,11 @@ namespace Lookit
             {
                 _second = clickPoint;
                 var measurement = new LineMeasurement(_first.Value, _second.Value);
+                //measurement.Straighten(Convert.ToInt32(20 * (1/Viewmodel().ZoomLevel)));
                 switch (Mode)
                 {
                     case Mode.Measure:
                         Viewmodel().LineMeasurements.Add(measurement);
-                        var distance = measurement.GetScaledDistance(Viewmodel().Scale);
-                        MessageBox.Show(distance?.ToString("F") ?? "No scale set");
                         _first = null;
                         _second = null;
                         break;

@@ -29,6 +29,21 @@ namespace Lookit.Models
             return measureDistance;
         }
 
+        public void Straighten(int maxDistance)
+        {
+            Func<int, int, bool> AreNear = (first, second) => Math.Abs(first - second) < maxDistance;
+
+            if (AreNear(Start.X, End.X))
+            {
+                End = new Point(Start.X, End.Y);
+            }
+
+            if (AreNear(Start.Y, End.Y))
+            {
+                End = new Point(End.X, Start.Y);
+            }
+        }
+
         public override string ToString() => $"({Start.X},{Start.Y}) - ({End.X},{End.Y}) Dist: {Math.Round(Distance, 2)}";
     }
 }
