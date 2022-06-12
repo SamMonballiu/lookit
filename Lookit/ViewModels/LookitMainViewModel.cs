@@ -22,14 +22,14 @@ namespace Lookit.ViewModels
         }
 
         public Scale Scale { get; private set; }
-        public ObservableCollection<LineMeasurement> LineMeasurements { get; private set; }
         public Mode Mode { get; set; } = Mode.None;
-
-
+        public ObservableCollection<MeasurementViewModel> Measurements { get; } = new ObservableCollection<MeasurementViewModel>();
+ 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        public void SetScale(Scale scale) {
+        public void SetScale(Scale scale)
+        {
             Scale = scale;
             OnPropertyChanged(nameof(Scale));
         }
@@ -37,10 +37,6 @@ namespace Lookit.ViewModels
         public LookitMainViewModel()
         {
             Scale = Scale.Default;
-            LineMeasurements = new ObservableCollection<LineMeasurement>()
-            {
-                new LineMeasurement(new System.Drawing.Point(550, 150), new System.Drawing.Point(60, 100))
-            };
         }
     }
 }

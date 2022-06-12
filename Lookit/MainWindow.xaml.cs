@@ -1,7 +1,6 @@
 ﻿using Lookit.Models;
 using Lookit.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,7 +10,7 @@ using System.Windows.Shapes;
 
 namespace Lookit
 {
-    
+
 
     public enum Mode
     {
@@ -36,7 +35,7 @@ namespace Lookit
 
         private Scale _scale;
 
-        private LookitMainViewModel Viewmodel() => (DataContext as LookitMainViewModel);
+        public LookitMainViewModel Viewmodel => (DataContext as LookitMainViewModel);
 
         public MainWindow()
         {
@@ -50,6 +49,7 @@ namespace Lookit
             };
 
             UpdateCanvas();
+            UpdateMeasurementList(); 
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
@@ -111,16 +111,18 @@ namespace Lookit
                 switch (Mode)
                 {
                     case Mode.Measure:
-                        Viewmodel().LineMeasurements.Add(measurement);
+                        Viewmodel.Measurements.Add(MeasurementViewModel.From(measurement, Viewmodel.Scale));
+                        UpdateMeasurementList();
                         _first = null;
                         _second = null;
                         break;
                     case Mode.Scale:
                         _second = clickPoint;
-                        Viewmodel().SetScale(new Scale(_first.Value, _second.Value, double.Parse(TxtScaleDistance.Text)));
+                        Viewmodel.SetScale(new Scale(_first.Value, _second.Value, double.Parse(TxtScaleDistance.Text)));
                         _first = null;
                         _second = null;
                         Mode = Mode.Measure;
+                        UpdateMeasurementList();
                         break;
                 }
             }
@@ -163,7 +165,8 @@ namespace Lookit
 
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
         {
-            Viewmodel().Scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
+            Viewmodel.Scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
+            UpdateMeasurementList();
         }
 
         private void AddRect()
@@ -179,10 +182,21 @@ namespace Lookit
             CnvMeasure.Children.Add(rect);
         }
 
+        private void UpdateMeasurementList()
+        {
+            return;
+            //var measurements = Viewmodel().Measurements;
+            //var scale = Viewmodel().Scale;
+            //var list = measurements.Select(x => MeasurementViewModel.From(x, scale));
+            //ListMeasurements.ItemsSource = list;
+            //ListMeasurements.DisplayMemberPath = "ScaledDistance";
+        }
+
         private void UpdateCanvas()
         {
-            var selected = ListMeasurements.SelectedItem;
-            var scale = Viewmodel().Scale;
+            var selected = ListMeasurements.SelectedIndex;
+            var measurements = Viewmodel.Measurements;
+            var scale = Viewmodel.Scale;
             CnvMeasure.Children.Clear();
 
             if (scale != null)
@@ -191,15 +205,15 @@ namespace Lookit
 
             }
 
-            foreach (var line in Viewmodel().LineMeasurements)
+            foreach (var line in measurements)
             {
-                AddLine(line, selected == line ? Brushes.Yellow : Brushes.Red);
+                AddLine(line.Measurement, selected == measurements.IndexOf(line) ? Brushes.Yellow : Brushes.Red);
             }
         }
 
         private void AddLine(LineMeasurement measurement, SolidColorBrush brush)
         {
-            var zoomLevel = Viewmodel().ZoomLevel;
+            var zoomLevel = Viewmodel.ZoomLevel;
 
             var line = new Line
             {
@@ -237,7 +251,7 @@ namespace Lookit
                 return;
             }
 
-            MessageBox.Show(selected.GetScaledDistance(Viewmodel().Scale)?.ToString() ?? "No scale set");
+            MessageBox.Show(selected.GetScaledDistance(Viewmodel.Scale)?.ToString() ?? "No scale set");
         }
     }
 }

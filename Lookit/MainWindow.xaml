@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Column="0" Grid.Row="0">
             <Button DockPanel.Dock="Top" x:Name="BtnShowDistance" Click="BtnShowDistance_Click" IsEnabled="False">Distance</Button>
-            <ListBox ItemsSource="{Binding Path=LineMeasurements}" x:Name="ListMeasurements" />
+            <ListBox ItemsSource="{Binding Path=Measurements}" x:Name="ListMeasurements" DisplayMemberPath="ScaledDistance" />
         </DockPanel>
         <StackPanel Grid.Column="1" Grid.Row="0">
             <StackPanel Orientation="Horizontal">

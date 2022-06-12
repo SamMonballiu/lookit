@@ -58,10 +58,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Extensions.cs" />
     <Compile Include="UserControls\ZoomPicker.xaml.cs">
       <DependentUpon>ZoomPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\LookitMainViewModel.cs" />
+    <Compile Include="ViewModels\MeasurementViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
