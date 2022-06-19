@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lookit" xmlns:usercontrols="clr-namespace:Lookit.UserControls"
+        xmlns:viewmodels="clr-namespace:Lookit.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:LookitMainViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="800">
     <Grid>
@@ -17,25 +19,24 @@
         </DockPanel>
         <StackPanel Grid.Column="1" Grid.Row="0">
             <StackPanel Orientation="Horizontal">
-                <Button Name="BtnPaste" Click="BtnPaste_Click">Paste</Button>
-                <Button Name="BtnScale" Click="BtnScale_Click">Set scale</Button>
+                <Button Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
+                <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
                 <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
+                <StackPanel VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding Straighten}">
+                        Straighten?
+                    </CheckBox>
+
+                </StackPanel>
                 <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
                     <Label>Mode:</Label>
                     <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
                 <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
-                    <Label>First:</Label>
-                    <Label Name="LblPosFirst"/>
-                    <Label>Second:</Label>
-                    <Label Name="LblPosSecond"/>
-
-                </StackPanel>
-                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
                     <Label>Scale distance:</Label>
-                    <TextBox Name="TxtScaleDistance" Width="200" Text="{Binding Mode=OneWay, Path=Scale.EnteredDistance}"/>
+                    <TextBox Name="TxtScaleDistance" Width="200" IsEnabled="False" Text="{Binding Mode=OneWay, Path=Scale.EnteredDistance}"/>
                     <Button Name="BtnUpdateScale" Click="BtnUpdateScale_Click">Update</Button>
-                    <usercontrols:ZoomPicker x:Name="zoomPicker" />
+                    <usercontrols:ZoomPicker x:Name="zoomPicker"/>
 
                 </StackPanel>
             </StackPanel>
@@ -49,22 +50,36 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
-                        <Image Source="./Assets/test.GIF" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
+                        <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                             </Image.LayoutTransform>
                         </Image>
                     </ContentControl>
-                    <Canvas Cursor="Cross" Opacity="0.5" 
-                            MouseUp="ImgControl_OnMouseUp" 
-                            Name="CnvMeasure" 
-                            Grid.Row="0" Grid.Column="0"  
-                            Background="Transparent">
-                        <Canvas.LayoutTransform>
-                            <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
-                        </Canvas.LayoutTransform>
-                    </Canvas>
-                    
+                    <ItemsControl ItemsSource="{Binding Path=Measurements}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Cursor="Cross" Opacity="0.5" 
+                                    MouseUp="ImgControl_OnMouseUp" 
+                                    Name="CnvMeasure" 
+                                    Grid.Row="0" Grid.Column="0"  
+                                    Background="Transparent"
+                                >
+                                    <Canvas.LayoutTransform>
+                                        <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
+                                    </Canvas.LayoutTransform>
+                                </Canvas>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Line 
+                                    X1="{Binding Path=Measurement.Start.X}" X2="{Binding Path=Measurement.End.X}" 
+                                    Y1="{Binding Path=Measurement.Start.Y}" Y2="{Binding Path=Measurement.End.Y}" 
+                                    Stroke="Red" StrokeThickness="3"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
             </ScrollViewer>
         </StackPanel>

@@ -1,5 +1,8 @@
-﻿using Lookit.Models;
+﻿using Lookit.Context;
+using Lookit.Logic;
+using Lookit.Models;
 using Lookit.ViewModels;
+using Lookit.Views;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,17 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+
 namespace Lookit
 {
-
-
-    public enum Mode
-    {
-        None,
-        Scale,
-        Measure
-    }
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -28,14 +23,9 @@ namespace Lookit
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
 
-        public Mode Mode { get; set; } = Mode.None;
-
-        private System.Drawing.Point? _first;
-        private System.Drawing.Point? _second;
-
-        private Scale _scale;
-
         public LookitMainViewModel Viewmodel => (DataContext as LookitMainViewModel);
+
+        private Point? _clickedPoint;
 
         public MainWindow()
         {
@@ -45,128 +35,48 @@ namespace Lookit
             ListMeasurements.SelectionChanged += (o, e) =>
             {
                 BtnShowDistance.IsEnabled = ListMeasurements.SelectedItem != null;
-                UpdateCanvas();
             };
 
-            UpdateCanvas();
-            UpdateMeasurementList(); 
+            //ImgMain.Source = new BitmapImage(new Uri(@"Assets/test.GIF", UriKind.RelativeOrAbsolute));
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
         {
             (DataContext as LookitMainViewModel).ZoomLevel = e.Value;
-            UpdateCanvas();
-        }
-
-        private void PasteImage()
-        {
-            
-            if (Clipboard.ContainsImage())
-            {
-                IDataObject clipboardData = Clipboard.GetDataObject();
-                if (clipboardData != null)
-                {
-                    if (clipboardData.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                    {
-                        BitmapSource src = Clipboard.GetImage();
-                        ImgMain.Source = src;
-                        //System.Drawing.Bitmap bitmap = (System.Drawing.Bitmap)clipboardData.GetData(System.Windows.Forms.DataFormats.Bitmap);
-                        //IntPtr hBitmap = bitmap.GetHbitmap();
-                        //try
-                        //{
-                        //    ImgMain.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        //    Console.WriteLine("Clipboard copied to UIElement");
-                        //}
-                        //finally
-                        //{
-                        //    DeleteObject(hBitmap);
-                        //}
-                    }
-                }
-            }
-        }
-
-        private void BtnPaste_Click(object sender, RoutedEventArgs e)
-        {
-            PasteImage();
         }
 
         private void ImgControl_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (Mode == Mode.None)
+            if (Viewmodel.Mode == Mode.Scale || Viewmodel.Mode == Mode.None)
             {
+                if (_clickedPoint is null)
+                {
+                    _clickedPoint = e.GetPosition(ImgMain);
+                    return;
+                }
+
+                var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
+                view.ShowDialog();
+                _clickedPoint = null;
                 return;
             }
 
-            var clickPoint = ConvertPoint(e.GetPosition(ImgMain));
-            if (_first is null)
-            {
-                _first = clickPoint;
-            }
-            else
-            {
-                _second = clickPoint;
-                var measurement = new LineMeasurement(_first.Value, _second.Value);
-                //measurement.Straighten(Convert.ToInt32(20 * (1/Viewmodel().ZoomLevel)));
-                switch (Mode)
-                {
-                    case Mode.Measure:
-                        Viewmodel.Measurements.Add(MeasurementViewModel.From(measurement, Viewmodel.Scale));
-                        UpdateMeasurementList();
-                        _first = null;
-                        _second = null;
-                        break;
-                    case Mode.Scale:
-                        _second = clickPoint;
-                        Viewmodel.SetScale(new Scale(_first.Value, _second.Value, double.Parse(TxtScaleDistance.Text)));
-                        _first = null;
-                        _second = null;
-                        Mode = Mode.Measure;
-                        UpdateMeasurementList();
-                        break;
-                }
-            }
-
-            UpdateLabels();
-            UpdateCanvas();
-        }
-
-        private void UpdateLabels()
-        {
-
-            if (_first != null)
-            {
-                LblPosFirst.Content = $"{_first.Value.X:F} {_first.Value.Y:F}";
-            }
-
-            if (_second != null)
-            {
-                LblPosSecond.Content = $"{_second.Value.X:F} {_second.Value.Y:F}";
-            }
-            LblMode.Content = Mode;
+            Viewmodel.OnAddPoint.Execute(e.GetPosition(ImgMain).ToPoint());
         }
 
         private void BtnScale_Click(object sender, RoutedEventArgs e)
         {
-            Mode = Mode.Scale;
-            UpdateLabels();
+            Viewmodel.Mode = Mode.Scale;
         }
 
         private void BtnMeasure_Click(object sender, RoutedEventArgs e)
         {
-            Mode = Mode.Measure;
-            UpdateLabels();
-        }
-
-        private System.Drawing.Point ConvertPoint(System.Windows.Point point)
-        {
-            return new System.Drawing.Point() { X = Convert.ToInt32(point.X), Y = Convert.ToInt32(point.Y) };
+            Viewmodel.Mode = Mode.Measure;
         }
 
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
         {
-            Viewmodel.Scale.SetEnteredDistance(double.Parse(TxtScaleDistance.Text));
-            UpdateMeasurementList();
+            ScaleContext.Scale = ScaleContext.Scale.UpdateDistance(double.Parse(TxtScaleDistance.Text));
         }
 
         private void AddRect()
@@ -179,36 +89,7 @@ namespace Lookit
             rect.Height = 200;
             Canvas.SetLeft(rect, 0);
             Canvas.SetTop(rect, 0);
-            CnvMeasure.Children.Add(rect);
-        }
-
-        private void UpdateMeasurementList()
-        {
-            return;
-            //var measurements = Viewmodel().Measurements;
-            //var scale = Viewmodel().Scale;
-            //var list = measurements.Select(x => MeasurementViewModel.From(x, scale));
-            //ListMeasurements.ItemsSource = list;
-            //ListMeasurements.DisplayMemberPath = "ScaledDistance";
-        }
-
-        private void UpdateCanvas()
-        {
-            var selected = ListMeasurements.SelectedIndex;
-            var measurements = Viewmodel.Measurements;
-            var scale = Viewmodel.Scale;
-            CnvMeasure.Children.Clear();
-
-            if (scale != null)
-            {
-                AddLine(new LineMeasurement(scale.First, scale.Second), Brushes.Green);
-
-            }
-
-            foreach (var line in measurements)
-            {
-                AddLine(line.Measurement, selected == measurements.IndexOf(line) ? Brushes.Yellow : Brushes.Red);
-            }
+            //CnvMeasure.Children.Add(rect);
         }
 
         private void AddLine(LineMeasurement measurement, SolidColorBrush brush)
@@ -226,7 +107,7 @@ namespace Lookit
                 Visibility = Visibility.Visible
             };
 
-            CnvMeasure.Children.Add(line);
+            //CnvMeasure.Children.Add(line);
         }
 
         private void AddEllipse(System.Windows.Point point)
@@ -240,7 +121,7 @@ namespace Lookit
             };
             Canvas.SetLeft(ellipse, point.X - 10);
             Canvas.SetTop(ellipse, point.Y - 10);
-            CnvMeasure.Children.Add(ellipse);
+            //CnvMeasure.Children.Add(ellipse);
         }
 
         private void BtnShowDistance_Click(object sender, RoutedEventArgs e)

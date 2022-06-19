@@ -28,6 +28,11 @@ namespace Lookit.Models
             _enteredDistance = distance;
         }
 
-        public static Scale Default => new Scale(new Point(), new Point(), 1);
+        public static Scale Default => new Scale(new Point(100, 100), new Point(500, 500), 1);
+
+        public Scale UpdateDistance(double distance)
+        {
+            return new Scale(First, Second, distance);
+        }
     }
 }

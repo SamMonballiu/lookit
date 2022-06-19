@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Lookit.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="White">
         <Label Margin="0 0 16 0">Zoom:</Label>
         <Button x:Name="BtnZoomOut" Content="-" Width="25" Margin="0 0 8 0"/>
-        <ComboBox Width="100" x:Name="ddnZoom" SelectionChanged="ddnZoom_SelectionChanged"/>
+        <ComboBox Width="100" x:Name="ddnZoom" SelectionChanged="ddnZoom_SelectionChanged" />
         <Button x:Name="BtnZoomIn" Content="+" Width="25" Margin="8 0 0 0"/>
     </StackPanel>
 </UserControl>
