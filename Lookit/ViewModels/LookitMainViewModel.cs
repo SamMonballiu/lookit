@@ -28,7 +28,7 @@ namespace Lookit.ViewModels
         private Mode _mode = Mode.Scale;
         public Mode Mode
         {
-            get => _mode; 
+            get => _mode;
             set
             {
                 SetProperty(ref _mode, value);
@@ -49,7 +49,8 @@ namespace Lookit.ViewModels
         public bool Straighten
         {
             get => _straighten;
-            set {
+            set
+            {
                 SetProperty(ref _straighten, value);
                 OnPropertyChanged();
             }
@@ -58,6 +59,7 @@ namespace Lookit.ViewModels
 
         public ICommand OnPasteImage { get; private set; }
         public ICommand OnAddPoint { get; private set; }
+        public ICommand OnRemoveMeasurement { get; private set; }
 
         private void AddMeasurement(System.Drawing.Point point)
         {
@@ -77,7 +79,7 @@ namespace Lookit.ViewModels
                 var measurement = new LineMeasurement(_first.Value, _second.Value);
                 if (Straighten)
                 {
-                    measurement.Straighten(Convert.ToInt32(20 * (1/ZoomLevel)));
+                    measurement.Straighten(Convert.ToInt32(20 * (1 / ZoomLevel)));
                 }
                 switch (Mode)
                 {
@@ -109,6 +111,10 @@ namespace Lookit.ViewModels
         {
             OnPasteImage = new Command(PasteImage);
             OnAddPoint = new Command<System.Drawing.Point>((point) => AddMeasurement(point));
+            OnRemoveMeasurement = new Command<MeasurementViewModel>(measurement =>
+            {
+                Measurements.Remove(measurement);
+            });
         }
     }
 }

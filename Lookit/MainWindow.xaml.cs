@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 
@@ -32,11 +31,6 @@ namespace Lookit
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
-            ListMeasurements.SelectionChanged += (o, e) =>
-            {
-                BtnShowDistance.IsEnabled = ListMeasurements.SelectedItem != null;
-            };
-
             //ImgMain.Source = new BitmapImage(new Uri(@"Assets/test.GIF", UriKind.RelativeOrAbsolute));
         }
 
@@ -122,17 +116,6 @@ namespace Lookit
             Canvas.SetLeft(ellipse, point.X - 10);
             Canvas.SetTop(ellipse, point.Y - 10);
             //CnvMeasure.Children.Add(ellipse);
-        }
-
-        private void BtnShowDistance_Click(object sender, RoutedEventArgs e)
-        {
-            var selected = ListMeasurements.SelectedItem as LineMeasurement;
-            if (selected is null)
-            {
-                return;
-            }
-
-            MessageBox.Show(selected.GetScaledDistance(Viewmodel.Scale)?.ToString() ?? "No scale set");
         }
     }
 }

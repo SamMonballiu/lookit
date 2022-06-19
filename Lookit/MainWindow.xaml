@@ -10,12 +10,33 @@
         Title="MainWindow" Height="800" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".33*"/>
+            <ColumnDefinition Width=".2*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Column="0" Grid.Row="0">
-            <Button DockPanel.Dock="Top" x:Name="BtnShowDistance" Click="BtnShowDistance_Click" IsEnabled="False">Distance</Button>
-            <ListBox ItemsSource="{Binding Path=Measurements}" x:Name="ListMeasurements" DisplayMemberPath="ScaledDistance" />
+            <ListBox ItemsSource="{Binding Measurements}" x:Name="ListMeasurements">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid VerticalAlignment="Center" Margin="0 6 0 6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Margin="0 0 8 0"
+                                Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.OnRemoveMeasurement}"
+                                CommandParameter="{Binding}"
+                                Cursor="Hand"
+                                >
+                                <Image Source="/Assets/action_stop.gif" Height="16" Width="16"/>
+                            </Button>
+                            <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding ScaledDistance}"/>
+                        </Grid>
+
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </DockPanel>
         <StackPanel Grid.Column="1" Grid.Row="0">
             <StackPanel Orientation="Horizontal">
@@ -47,16 +68,19 @@
                         <ColumnDefinition Width=".33*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition />
+                        <RowDefinition Height="83*" />
+                        <RowDefinition Height="517*"/>
+                        <RowDefinition Height="600*"/>
+                        <!--<RowDefinition Height="197*"/>-->
                     </Grid.RowDefinitions>
-                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp">
+                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp" Grid.RowSpan="3">
                         <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                             </Image.LayoutTransform>
                         </Image>
                     </ContentControl>
-                    <ItemsControl ItemsSource="{Binding Path=Measurements}">
+                    <ItemsControl ItemsSource="{Binding Path=Measurements}" Grid.RowSpan="3">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas Cursor="Cross" Opacity="0.5" 
@@ -84,5 +108,5 @@
             </ScrollViewer>
         </StackPanel>
     </Grid>
-    
+
 </Window>
