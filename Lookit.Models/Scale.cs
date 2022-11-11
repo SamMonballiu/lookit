@@ -13,7 +13,7 @@ namespace Lookit.Models
         public double EnteredDistance => _enteredDistance;
         public double ActualDistance
             => Math.Sqrt((Math.Pow(First.X - Second.X, 2) + Math.Pow(First.Y - Second.Y, 2)));
-        public double DistanceUnit
+        public double Factor
             => EnteredDistance / ActualDistance;
 
         public Scale(Point first, Point second, double distance)
@@ -34,5 +34,8 @@ namespace Lookit.Models
         {
             return new Scale(First, Second, distance);
         }
+
+        public override string ToString() => $"{First.X} {First.Y}, {Second.X} {Second.Y}";
+        
     }
 }

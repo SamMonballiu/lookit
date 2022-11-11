@@ -65,12 +65,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Context\ScaleContext.cs" />
+    <Compile Include="Context\SelectedMeasurementContext.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logic\Mode.cs" />
     <Compile Include="Logic\PointExtensions.cs" />
     <Compile Include="UserControls\ZoomPicker.xaml.cs">
       <DependentUpon>ZoomPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ValueConverters\PolygonalMeasurementToColorBrushConverter.cs" />
     <Compile Include="ViewModels\LookitMainViewModel.cs" />
     <Compile Include="ViewModels\MeasurementViewModel.cs" />
     <Compile Include="ViewModels\SetScaleViewModel.cs" />

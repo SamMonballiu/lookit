@@ -4,10 +4,12 @@ using Lookit.Models;
 using Lookit.ViewModels;
 using Lookit.Views;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 
@@ -32,6 +34,18 @@ namespace Lookit
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
             //ImgMain.Source = new BitmapImage(new Uri(@"Assets/test.GIF", UriKind.RelativeOrAbsolute));
+
+            ListMeasurements.SelectionChanged += (s, e) =>
+            {
+                try
+                {
+                    var measurement = Viewmodel.Measurements[ListMeasurements.SelectedIndex]?.Measurement;
+                    SelectedMeasurementContext.SelectedMeasurement = measurement;
+                } catch
+                {
+                    //TODO Fix
+                }
+            };
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
@@ -41,21 +55,30 @@ namespace Lookit
 
         private void ImgControl_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (Viewmodel.Mode == Mode.Scale || Viewmodel.Mode == Mode.None)
+            switch (e.ChangedButton)
             {
-                if (_clickedPoint is null)
-                {
-                    _clickedPoint = e.GetPosition(ImgMain);
-                    return;
-                }
+                case MouseButton.Left:
+                    if (Viewmodel.Mode == Mode.Scale || Viewmodel.Mode == Mode.None)
+                    {
+                        if (_clickedPoint is null)
+                        {
+                            _clickedPoint = e.GetPosition(ImgMain);
+                            return;
+                        }
 
-                var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
-                view.ShowDialog();
-                _clickedPoint = null;
-                return;
+                        var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
+                        view.ShowDialog();
+                        _clickedPoint = null;
+                        return;
+                    }
+
+                    Viewmodel.OnAddPoint.Execute(e.GetPosition(ImgMain).ToPoint());
+                    break;
+
+                case MouseButton.Right:
+                    Viewmodel.OnRemovePoint.Execute(null);
+                    break;
             }
-
-            Viewmodel.OnAddPoint.Execute(e.GetPosition(ImgMain).ToPoint());
         }
 
         private void BtnScale_Click(object sender, RoutedEventArgs e)
@@ -116,6 +139,11 @@ namespace Lookit
             Canvas.SetLeft(ellipse, point.X - 10);
             Canvas.SetTop(ellipse, point.Y - 10);
             //CnvMeasure.Children.Add(ellipse);
+        }
+
+        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Loaded");
         }
     }
 }

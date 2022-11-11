@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 
 namespace Lookit.Models
@@ -25,7 +27,7 @@ namespace Lookit.Models
             }
 
             var clickedDistance = GetDistance(Start, End);
-            var measureDistance = clickedDistance * scale.DistanceUnit;
+            var measureDistance = clickedDistance * scale.Factor;
             return measureDistance;
         }
 

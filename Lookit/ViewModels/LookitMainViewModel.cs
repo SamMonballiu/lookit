@@ -4,7 +4,9 @@ using Lookit.Models;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -16,7 +18,7 @@ namespace Lookit.ViewModels
         private System.Drawing.Point? _first;
         private System.Drawing.Point? _second;
 
-        private double _zoomLevel = 1.00;
+        private double _zoomLevel = 0.5;
         public double ZoomLevel
         {
             get => _zoomLevel;
@@ -25,7 +27,7 @@ namespace Lookit.ViewModels
 
         public Scale Scale => ScaleContext.Scale;
 
-        private Mode _mode = Mode.Scale;
+        private Mode _mode = Mode.Measure;
         public Mode Mode
         {
             get => _mode;
@@ -35,7 +37,11 @@ namespace Lookit.ViewModels
                 OnPropertyChanged();
             }
         }
-        public ObservableCollection<MeasurementViewModel> Measurements { get; } = new ObservableCollection<MeasurementViewModel>();
+        public ObservableCollection<PolygonMeasurementViewModel> Measurements { get; } = new ObservableCollection<PolygonMeasurementViewModel>();
+        public ObservableCollection<System.Drawing.Point> TempPoints = new ObservableCollection<System.Drawing.Point>();
+        
+        public string TempPointsString => string.Join(",", TempPoints.Select(p => $"{p.X}, {p.Y}"));
+
 
         private BitmapSource _imageSource = null;
         public BitmapSource ImageSource
@@ -59,6 +65,7 @@ namespace Lookit.ViewModels
 
         public ICommand OnPasteImage { get; private set; }
         public ICommand OnAddPoint { get; private set; }
+        public ICommand OnRemovePoint { get; private set; }
         public ICommand OnRemoveMeasurement { get; private set; }
 
         private void AddMeasurement(System.Drawing.Point point)
@@ -68,27 +75,25 @@ namespace Lookit.ViewModels
                 return;
             }
 
-            var clickPoint = point;
-            if (_first is null)
+            if (!TempPoints.Any() || !point.IsClose(TempPoints.ElementAt(0)))
             {
-                _first = clickPoint;
+                TempPoints.Add(point);
+            } else if (point.IsClose(TempPoints.ElementAt(0)))
+            {
+                var measurement = new PolygonalMeasurement(TempPoints.ToList());
+                Measurements.Add(PolygonMeasurementViewModel.From(measurement, Scale));
+                TempPoints.Clear();
             }
-            else
+
+            OnPropertyChanged(nameof(TempPointsString));
+        }
+
+        private void RemoveLastPoint()
+        {
+            if (TempPoints.Any())
             {
-                _second = clickPoint;
-                var measurement = new LineMeasurement(_first.Value, _second.Value);
-                if (Straighten)
-                {
-                    measurement.Straighten(Convert.ToInt32(20 * (1 / ZoomLevel)));
-                }
-                switch (Mode)
-                {
-                    case Mode.Measure:
-                        Measurements.Add(MeasurementViewModel.From(measurement, Scale));
-                        _first = null;
-                        _second = null;
-                        break;
-                }
+                TempPoints.Remove(TempPoints.Last());
+                OnPropertyChanged(nameof(TempPointsString));
             }
         }
 
@@ -111,10 +116,13 @@ namespace Lookit.ViewModels
         {
             OnPasteImage = new Command(PasteImage);
             OnAddPoint = new Command<System.Drawing.Point>((point) => AddMeasurement(point));
-            OnRemoveMeasurement = new Command<MeasurementViewModel>(measurement =>
+            OnRemovePoint = new Command(RemoveLastPoint);
+            OnRemoveMeasurement = new Command<PolygonMeasurementViewModel>(measurement =>
             {
                 Measurements.Remove(measurement);
             });
+            ScaleContext.OnScaleChanged += (_) => OnPropertyChanged(nameof(Scale));
         }
+
     }
 }
