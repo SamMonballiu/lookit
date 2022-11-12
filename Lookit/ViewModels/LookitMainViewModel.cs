@@ -3,8 +3,6 @@ using Lookit.Logic;
 using Lookit.Models;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -15,10 +13,15 @@ namespace Lookit.ViewModels
 {
     public class LookitMainViewModel : BaseViewModel
     {
-        private System.Drawing.Point? _first;
-        private System.Drawing.Point? _second;
+        public void Reset()
+        {
+            Measurements.Clear();
+            TempPoints.Clear();
+            ScaleContext.Scale = Scale.Default;
+            Mode = Mode.Measure;
+        }
 
-        private double _zoomLevel = 0.5;
+        private double _zoomLevel = 1;
         public double ZoomLevel
         {
             get => _zoomLevel;
@@ -67,6 +70,7 @@ namespace Lookit.ViewModels
         public ICommand OnAddPoint { get; private set; }
         public ICommand OnRemovePoint { get; private set; }
         public ICommand OnRemoveMeasurement { get; private set; }
+        public ICommand OnSetImageSource { get; private set; }
 
         private void AddMeasurement(System.Drawing.Point point)
         {
@@ -114,6 +118,7 @@ namespace Lookit.ViewModels
 
         public LookitMainViewModel()
         {
+            OnSetImageSource = new Command<BitmapSource>((bitmap) => ImageSource = bitmap);
             OnPasteImage = new Command(PasteImage);
             OnAddPoint = new Command<System.Drawing.Point>((point) => AddMeasurement(point));
             OnRemovePoint = new Command(RemoveLastPoint);

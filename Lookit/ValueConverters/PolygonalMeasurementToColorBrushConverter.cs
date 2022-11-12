@@ -14,10 +14,10 @@ namespace Lookit.ValueConverters
             var selected = SelectedMeasurementContext.SelectedMeasurement;
             if (value is PolygonalMeasurement measurement && measurement.Equals(selected))
             {
-                return Brushes.Blue;
+                return Brushes.Red;
             }
 
-            return Brushes.Yellow;
+            return Brushes.CornflowerBlue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

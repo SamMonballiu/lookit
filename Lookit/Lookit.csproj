@@ -41,7 +41,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
+    </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -55,6 +60,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Windows">
+      <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.22621.0\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -64,18 +72,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Context\PageContext.cs" />
     <Compile Include="Context\ScaleContext.cs" />
     <Compile Include="Context\SelectedMeasurementContext.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logic\Mode.cs" />
     <Compile Include="Logic\PointExtensions.cs" />
+    <Compile Include="UserControls\PagePicker.xaml.cs">
+      <DependentUpon>PagePicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ZoomPicker.xaml.cs">
       <DependentUpon>ZoomPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\PolygonalMeasurementToColorBrushConverter.cs" />
     <Compile Include="ViewModels\LookitMainViewModel.cs" />
     <Compile Include="ViewModels\MeasurementViewModel.cs" />
+    <Compile Include="ViewModels\PdfPickerViewmodel.cs" />
     <Compile Include="ViewModels\SetScaleViewModel.cs" />
+    <Compile Include="Views\PdfPicker.xaml.cs">
+      <DependentUpon>PdfPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SetScaleView.xaml.cs">
       <DependentUpon>SetScaleView.xaml</DependentUpon>
     </Compile>
@@ -91,7 +107,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UserControls\PagePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\ZoomPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PdfPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,6 +162,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\action_stop.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\book_previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\tick.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,6 +8,7 @@
         xmlns:valueconverters="clr-namespace:Lookit.ValueConverters"
         d:DataContext="{d:DesignInstance Type=viewmodels:LookitMainViewModel}"
         mc:Ignorable="d"
+        WindowState="Maximized"
         Title="MainWindow" Height="800" Width="800">
     <Window.Resources>
         <valueconverters:PolygonalMeasurementToColorBrushConverter x:Key="measurementColorConverter" />
@@ -45,7 +46,8 @@
         </DockPanel>
         <DockPanel Grid.Column="1" Grid.Row="0">
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                <Button Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
+                <Button Visibility="Collapsed" Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
+                <Button Name="btnOpenFile" Content="Open" Click="btnOpenFile_Click"/>
                 <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
                 <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
                 <StackPanel VerticalAlignment="Center">
@@ -73,7 +75,7 @@
                         <ColumnDefinition Width=".33*" />
                     </Grid.ColumnDefinitions>
                     
-                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" MouseUp="ImgControl_OnMouseUp" Grid.RowSpan="3" Background="White">
+                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White">
                         <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
@@ -81,7 +83,7 @@
                         </Image>
                     </ContentControl>
                     
-                    <Polygon Grid.Row="0" Grid.Column="0" Points="{Binding Path=TempPointsString}" Stroke="Blue" StrokeThickness="2">
+                    <Polygon Grid.Row="0" Grid.Column="0" Points="{Binding Path=TempPointsString}" Stroke="Red" StrokeThickness="1">
                         <Polygon.LayoutTransform>
                             <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                         </Polygon.LayoutTransform>
@@ -96,27 +98,6 @@
                             <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                         </Line.RenderTransform>
                     </Line>
-
-                    <ItemsControl ItemsSource="{Binding Path=TemPoints}" Grid.RowSpan="3">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas Cursor="Cross" Opacity="0.5" 
-                                    Grid.Row="0" Grid.Column="0"  
-                                    Background="Transparent"
-                                >
-                                    <Canvas.LayoutTransform>
-                                        <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
-                                    </Canvas.LayoutTransform>
-
-                                </Canvas>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Polygon Points="{Binding Path=Points}" Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" Opacity="0.5" StrokeThickness="2"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
 
                     <ItemsControl ItemsSource="{Binding Path=Measurements}" Grid.RowSpan="3">
                         <ItemsControl.ItemsPanel>

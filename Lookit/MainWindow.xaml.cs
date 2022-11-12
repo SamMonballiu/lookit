@@ -5,6 +5,7 @@ using Lookit.ViewModels;
 using Lookit.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,12 +29,15 @@ namespace Lookit
 
         private Point? _clickedPoint;
 
+
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
             //ImgMain.Source = new BitmapImage(new Uri(@"Assets/test.GIF", UriKind.RelativeOrAbsolute));
+
+            ShowPdfPicker();
 
             ListMeasurements.SelectionChanged += (s, e) =>
             {
@@ -46,6 +50,14 @@ namespace Lookit
                     //TODO Fix
                 }
             };
+        }
+
+        public void ShowPdfPicker()
+        {
+            new PdfPicker().ShowDialog();
+            Viewmodel.Reset();
+            Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
+
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
@@ -144,6 +156,11 @@ namespace Lookit
         private void TextBlock_Loaded(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Loaded");
+        }
+
+        private void btnOpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            ShowPdfPicker();
         }
     }
 }
