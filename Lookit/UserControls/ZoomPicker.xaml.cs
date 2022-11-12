@@ -29,7 +29,7 @@ namespace Lookit.UserControls
     /// 
     public partial class ZoomPicker : UserControl
     {
-        private readonly double[] _zoomOptions = new[] { 0.125, 0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.25, 1.5, 2  };
+        private readonly double[] _zoomOptions = new[] { 0.125, 0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4 };
 
         public event EventHandler<ZoomChangedEventArgs> ZoomChanged;
         protected void OnZoomChanged(double value) => ZoomChanged?.Invoke(this, new ZoomChangedEventArgs(value));
