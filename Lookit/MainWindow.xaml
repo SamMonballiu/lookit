@@ -49,7 +49,7 @@
                 <Button Visibility="Collapsed" Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
                 <Button Name="btnOpenFile" Content="Open" Click="btnOpenFile_Click"/>
                 <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
-                <Button Name="BtnMeasure" Click="BtnMeasure_Click">Measure</Button>
+                <Button Name="BtnMeasure" Click="BtnMeasure_Click">Area</Button>
                 <StackPanel VerticalAlignment="Center">
                     <CheckBox IsChecked="{Binding Straighten}">
                         Straighten?

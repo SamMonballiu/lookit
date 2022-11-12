@@ -3,11 +3,15 @@ using Lookit.Logic;
 using Lookit.Models;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Clipboard = System.Windows.Clipboard;
+using IDataObject = System.Windows.IDataObject;
 
 namespace Lookit.ViewModels
 {
@@ -71,6 +75,11 @@ namespace Lookit.ViewModels
         public ICommand OnRemovePoint { get; private set; }
         public ICommand OnRemoveMeasurement { get; private set; }
         public ICommand OnSetImageSource { get; private set; }
+        
+        private static bool IsControlDown()
+        {
+            return (Control.ModifierKeys & Keys.Control) == Keys.Control;
+        }
 
         private void AddMeasurement(System.Drawing.Point point)
         {
@@ -81,6 +90,12 @@ namespace Lookit.ViewModels
 
             if (!TempPoints.Any() || !point.IsClose(TempPoints.ElementAt(0)))
             {
+                if (Straighten && !IsControlDown() && TempPoints.Any())
+                {
+                    var previousPoint = TempPoints.Last();
+                    var tolerance = Convert.ToInt32(10 * (1 / ZoomLevel));
+                    point = point.Align(previousPoint, tolerance);
+                }
                 TempPoints.Add(point);
             } else if (point.IsClose(TempPoints.ElementAt(0)))
             {
