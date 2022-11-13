@@ -76,7 +76,7 @@
                     </Grid.ColumnDefinitions>
                     
                     <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White">
-                        <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1200" Height="1200" Name="ImgMain">
+                        <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ImgMain" RenderOptions.BitmapScalingMode="HighQuality">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
                             </Image.LayoutTransform>
