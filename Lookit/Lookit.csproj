@@ -84,6 +84,7 @@
     <Compile Include="UserControls\ZoomPicker.xaml.cs">
       <DependentUpon>ZoomPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ValueConverters\PointToThicknessConverter.cs" />
     <Compile Include="ValueConverters\PolygonalMeasurementToColorBrushConverter.cs" />
     <Compile Include="ViewModels\LookitMainViewModel.cs" />
     <Compile Include="ViewModels\MeasurementViewModel.cs" />
