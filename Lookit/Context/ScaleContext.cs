@@ -1,5 +1,4 @@
 ﻿using Lookit.Models;
-using MvvmHelpers;
 using System;
 
 namespace Lookit.Context

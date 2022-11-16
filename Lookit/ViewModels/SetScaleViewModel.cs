@@ -1,27 +1,28 @@
 ﻿using Lookit.Context;
 using Lookit.Logic;
 using Lookit.Models;
-using MvvmHelpers;
-using MvvmHelpers.Commands;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Lookit.ViewModels
 {
-    public class SetScaleViewModel : BaseViewModel
+    public partial class SetScaleViewModel : ObservableObject
     {
         public double Scale { get; set; }
         public (Point, Point) Points { get; private set; }
         public ICommand ConfirmScale { get; private set; }
         public ICommand SetPoints { get; private set; }
         public event Action OnScaleConfirmed;
+        [ObservableProperty] private string _title;
 
         public SetScaleViewModel()
         {
-            Title = "Set scale";
-            ConfirmScale = new Command<(Point, Point)>(UpdateScale);
-            SetPoints = new Command<(Point, Point)>((points) =>
+            _title = "Set scale";
+            ConfirmScale = new RelayCommand<(Point, Point)>(UpdateScale);
+            SetPoints = new RelayCommand<(Point, Point)>((points) =>
             {
                 Points = points;
             });

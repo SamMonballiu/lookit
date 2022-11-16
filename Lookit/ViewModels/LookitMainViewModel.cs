@@ -1,74 +1,52 @@
 ﻿using Lookit.Context;
 using Lookit.Logic;
 using Lookit.Models;
-using MvvmHelpers;
-using MvvmHelpers.Commands;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Clipboard = System.Windows.Clipboard;
 using IDataObject = System.Windows.IDataObject;
 
 namespace Lookit.ViewModels
 {
-    public class LookitMainViewModel : BaseViewModel
+    public partial class LookitMainViewModel : ObservableObject
     {
         public void Reset()
         {
             Measurements.Clear();
-            TempPoints.Clear();
+            _tempPoints.Clear();
             ScaleContext.Scale = Scale.Default;
-            Mode = Mode.Measure;
+            _mode = Mode.Measure;
         }
 
+        [ObservableProperty]
         private double _zoomLevel = 1;
-        public double ZoomLevel
-        {
-            get => _zoomLevel;
-            set => SetProperty(ref _zoomLevel, value);
-        }
 
         public Scale Scale => ScaleContext.Scale;
 
+        [ObservableProperty]
         private Mode _mode = Mode.Measure;
-        public Mode Mode
-        {
-            get => _mode;
-            set
-            {
-                SetProperty(ref _mode, value);
-                OnPropertyChanged();
-            }
-        }
-        public ObservableCollection<PolygonMeasurementViewModel> Measurements { get; } = new ObservableCollection<PolygonMeasurementViewModel>();
-        public ObservableCollection<System.Drawing.Point> TempPoints = new ObservableCollection<System.Drawing.Point>();
         
-        public string TempPointsString => string.Join(",", TempPoints.Select(p => $"{p.X}, {p.Y}"));
+        [ObservableProperty]
+        private List<PolygonMeasurementViewModel> _measurements = new();
+
+        [ObservableProperty]
+        private List<System.Drawing.Point> _tempPoints = new();
+        
+        public string TempPointsString => string.Join(",", _tempPoints.Select(p => $"{p.X}, {p.Y}"));
 
 
-        private BitmapSource _imageSource = null;
-        public BitmapSource ImageSource
-        {
-            get => _imageSource;
-            set => SetProperty(ref _imageSource, value);
-        }
+        [ObservableProperty]
+        private BitmapSource _imageSource;
 
+        [ObservableProperty]
         private bool _straighten = true;
-
-        public bool Straighten
-        {
-            get => _straighten;
-            set
-            {
-                SetProperty(ref _straighten, value);
-                OnPropertyChanged();
-            }
-        }
-
 
         public ICommand OnPasteImage { get; private set; }
         public ICommand OnAddPoint { get; private set; }
@@ -83,35 +61,34 @@ namespace Lookit.ViewModels
 
         private void AddMeasurement(System.Drawing.Point point)
         {
-            if (Mode == Mode.None)
+            if (_mode == Mode.None)
             {
                 return;
             }
 
-            if (!TempPoints.Any() || !point.IsClose(TempPoints.ElementAt(0)))
+            if (!_tempPoints.Any() || !point.IsClose(_tempPoints.ElementAt(0)))
             {
-                if (Straighten && !IsControlDown() && TempPoints.Any())
+                if (_straighten && !IsControlDown() && _tempPoints.Any())
                 {
-                    var previousPoint = TempPoints.Last();
-                    var tolerance = Convert.ToInt32(10 * (1 / ZoomLevel));
+                    var previousPoint = _tempPoints.Last();
+                    var tolerance = Convert.ToInt32(10 * (1 / _zoomLevel));
                     point = point.Align(previousPoint, tolerance);
                 }
-                TempPoints.Add(point);
-            } else if (point.IsClose(TempPoints.ElementAt(0)))
+                _tempPoints.Add(point);
+            } else if (point.IsClose(_tempPoints.ElementAt(0)))
             {
-                var measurement = new PolygonalMeasurement(TempPoints.ToList());
+                var measurement = new PolygonalMeasurement(_tempPoints.ToList());
                 Measurements.Add(PolygonMeasurementViewModel.From(measurement, Scale));
-                TempPoints.Clear();
+                _tempPoints.Clear();
             }
-
             OnPropertyChanged(nameof(TempPointsString));
         }
 
         private void RemoveLastPoint()
         {
-            if (TempPoints.Any())
+            if (_tempPoints.Any())
             {
-                TempPoints.Remove(TempPoints.Last());
+                _tempPoints.Remove(_tempPoints.Last());
                 OnPropertyChanged(nameof(TempPointsString));
             }
         }
@@ -125,7 +102,7 @@ namespace Lookit.ViewModels
                 {
                     if (clipboardData.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
                     {
-                        ImageSource = Clipboard.GetImage();
+                        _imageSource = Clipboard.GetImage();
                     }
                 }
             }
@@ -133,11 +110,15 @@ namespace Lookit.ViewModels
 
         public LookitMainViewModel()
         {
-            OnSetImageSource = new Command<BitmapSource>((bitmap) => ImageSource = bitmap);
-            OnPasteImage = new Command(PasteImage);
-            OnAddPoint = new Command<System.Drawing.Point>((point) => AddMeasurement(point));
-            OnRemovePoint = new Command(RemoveLastPoint);
-            OnRemoveMeasurement = new Command<PolygonMeasurementViewModel>(measurement =>
+            OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
+            {
+                _imageSource = bitmap;
+                //OnPropertyChanged(nameof(ImageSource));
+            });
+            OnPasteImage = new RelayCommand(PasteImage);
+            OnAddPoint = new RelayCommand<System.Drawing.Point>(AddMeasurement);
+            OnRemovePoint = new RelayCommand(RemoveLastPoint);
+            OnRemoveMeasurement = new RelayCommand<PolygonMeasurementViewModel>(measurement =>
             {
                 Measurements.Remove(measurement);
             });

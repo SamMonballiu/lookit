@@ -1,23 +1,23 @@
-﻿using MvvmHelpers;
-using MvvmHelpers.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Lookit.ViewModels
 {
-    public class PdfPickerViewmodel : BaseViewModel
+    public class PdfPickerViewmodel : ObservableObject
     {
         public event Action OnFilenameChanged;
         public ICommand OnSetImageSource;
 
         public PdfPickerViewmodel()
         {
-            OnSetImageSource = new Command<BitmapSource>(bitmap => ImageSource = bitmap);
+            OnSetImageSource = new RelayCommand<BitmapSource>(bitmap => ImageSource = bitmap);
         }
 
         private string _filename;

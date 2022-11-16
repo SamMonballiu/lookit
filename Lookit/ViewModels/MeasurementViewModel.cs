@@ -1,8 +1,8 @@
 ﻿using Lookit.Context;
 using Lookit.Models;
-using MvvmHelpers;
 using System;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lookit.ViewModels
 {
