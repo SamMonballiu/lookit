@@ -15,8 +15,9 @@ namespace Lookit.Views
         {
             InitializeComponent();
             txtScale.Focus();
+            txtScale.SelectAll();
             DataContext = new SetScaleViewModel();
-            (DataContext as SetScaleViewModel).SetPoints?.Execute((first, second));
+            (DataContext as SetScaleViewModel).Points = (first, second);
             (DataContext as SetScaleViewModel).OnScaleConfirmed += () => Close();
         }
     }

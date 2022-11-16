@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:Lookit.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SetScaleViewModel}"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="{Binding Title}" SizeToContent="WidthAndHeight">
     <StackPanel Margin="8" Width="240">
         <Label FontSize="14">Set scale distance</Label>
