@@ -63,6 +63,7 @@ namespace Lookit.Views
                 Viewmodel.PageCount = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
                 PageContext.Clear();
                 cbxSelectedPage.SelectedIndex = 0;
+                ComboBox_SelectionChanged(null, null);
             }
         }
 
