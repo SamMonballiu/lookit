@@ -34,10 +34,10 @@ namespace Lookit.ViewModels
         private Mode _mode = Mode.Measure;
         
         [ObservableProperty]
-        private List<PolygonMeasurementViewModel> _measurements = new();
+        private ObservableCollection<PolygonMeasurementViewModel> _measurements = new();
 
         [ObservableProperty]
-        private List<System.Drawing.Point> _tempPoints = new();
+        private ObservableCollection<System.Drawing.Point> _tempPoints = new();
         
         public string TempPointsString => string.Join(",", _tempPoints.Select(p => $"{p.X}, {p.Y}"));
 
@@ -61,25 +61,25 @@ namespace Lookit.ViewModels
 
         private void AddMeasurement(System.Drawing.Point point)
         {
-            if (_mode == Mode.None)
+            if (Mode == Mode.None)
             {
                 return;
             }
 
-            if (!_tempPoints.Any() || !point.IsClose(_tempPoints.ElementAt(0)))
+            if (!TempPoints.Any() || !point.IsClose(TempPoints.ElementAt(0)))
             {
-                if (_straighten && !IsControlDown() && _tempPoints.Any())
+                if (Straighten && !IsControlDown() && TempPoints.Any())
                 {
                     var previousPoint = _tempPoints.Last();
                     var tolerance = Convert.ToInt32(10 * (1 / _zoomLevel));
                     point = point.Align(previousPoint, tolerance);
                 }
-                _tempPoints.Add(point);
-            } else if (point.IsClose(_tempPoints.ElementAt(0)))
+                TempPoints.Add(point);
+            } else if (point.IsClose(TempPoints.ElementAt(0)))
             {
-                var measurement = new PolygonalMeasurement(_tempPoints.ToList());
+                var measurement = new PolygonalMeasurement(TempPoints.ToList());
                 Measurements.Add(PolygonMeasurementViewModel.From(measurement, Scale));
-                _tempPoints.Clear();
+                TempPoints.Clear();
             }
             OnPropertyChanged(nameof(TempPointsString));
         }
@@ -88,7 +88,7 @@ namespace Lookit.ViewModels
         {
             if (_tempPoints.Any())
             {
-                _tempPoints.Remove(_tempPoints.Last());
+                TempPoints.Remove(TempPoints.Last());
                 OnPropertyChanged(nameof(TempPointsString));
             }
         }
@@ -112,8 +112,7 @@ namespace Lookit.ViewModels
         {
             OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
             {
-                _imageSource = bitmap;
-                //OnPropertyChanged(nameof(ImageSource));
+                ImageSource = bitmap;
             });
             OnPasteImage = new RelayCommand(PasteImage);
             OnAddPoint = new RelayCommand<System.Drawing.Point>(AddMeasurement);

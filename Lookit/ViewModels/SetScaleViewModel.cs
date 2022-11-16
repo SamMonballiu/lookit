@@ -11,26 +11,21 @@ namespace Lookit.ViewModels
 {
     public partial class SetScaleViewModel : ObservableObject
     {
-        public double Scale { get; set; }
-        public (Point, Point) Points { get; private set; }
-        public ICommand ConfirmScale { get; private set; }
-        public ICommand SetPoints { get; private set; }
-        public event Action OnScaleConfirmed;
         [ObservableProperty] private string _title;
+        [ObservableProperty] private double _scale;
+        [ObservableProperty] private (Point First, Point Second) _points;
+        public ICommand ConfirmScale { get; set; }
+        public event Action OnScaleConfirmed;
 
         public SetScaleViewModel()
         {
             _title = "Set scale";
-            ConfirmScale = new RelayCommand<(Point, Point)>(UpdateScale);
-            SetPoints = new RelayCommand<(Point, Point)>((points) =>
-            {
-                Points = points;
-            });
+            ConfirmScale = new RelayCommand(UpdateScale);
         }
 
-        private void UpdateScale((Point First, Point Second) points)
+        public void UpdateScale()
         {
-            ScaleContext.Scale = new Scale(points.First.ToPoint(), points.Second.ToPoint(), Scale);
+            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), Scale);
             OnScaleConfirmed?.Invoke();
         }
     }
