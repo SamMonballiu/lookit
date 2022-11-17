@@ -40,7 +40,9 @@ namespace Lookit.ViewModels
         private ObservableCollection<System.Drawing.Point> _tempPoints = new();
         
         public string TempPointsString => string.Join(",", _tempPoints.Select(p => $"{p.X}, {p.Y}"));
-
+        public System.Drawing.Point FirstTempPoint => _tempPoints.Any() 
+            ? new System.Drawing.Point(TempPoints.First().X - 3, TempPoints.First().Y - 3) 
+            : new System.Drawing.Point(-10, -10);
 
         [ObservableProperty]
         private BitmapSource _imageSource;
@@ -82,6 +84,7 @@ namespace Lookit.ViewModels
                 TempPoints.Clear();
             }
             OnPropertyChanged(nameof(TempPointsString));
+            OnPropertyChanged(nameof(FirstTempPoint));
         }
 
         private void RemoveLastPoint()
