@@ -90,15 +90,21 @@
                         </Polygon.LayoutTransform>
                     </Polygon>
 
-                    <Line Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" DataContext="{Binding Scale}" Stroke="Yellow" StrokeThickness="3" 
-                          X1="{Binding First.X}" 
-                          Y1="{Binding First.Y}"
-                          X2="{Binding Second.X}"
-                          Y2="{Binding Second.Y}">
-                        <Line.RenderTransform>
-                            <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
-                        </Line.RenderTransform>
-                    </Line>
+                    <Canvas Cursor="Cross" Opacity="1" 
+                            Grid.Row="0" Grid.Column="0"  
+                            Background="Transparent"
+                    >
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
+                        </Canvas.LayoutTransform>
+
+                        <Line DataContext="{Binding Scale}" Stroke="Yellow" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                              X1="{Binding First.X}" 
+                              Y1="{Binding First.Y}"
+                              X2="{Binding Second.X}"
+                              Y2="{Binding Second.Y}">
+                        </Line>
+                    </Canvas>
 
                     <ItemsControl ItemsSource="{Binding Path=Measurements}" Grid.RowSpan="3">
                         <ItemsControl.ItemsPanel>
