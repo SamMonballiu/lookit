@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace Lookit.Models
 {
@@ -16,11 +14,14 @@ namespace Lookit.Models
         public double Factor
             => EnteredDistance / ActualDistance;
 
-        public Scale(Point first, Point second, double distance)
+        public ScaleUnit Unit { get; private set; }
+
+        public Scale(Point first, Point second, double distance, ScaleUnit unit)
         {
             First = first;
             Second = second;
             _enteredDistance = distance;
+            Unit = unit;
         }
 
         public void SetEnteredDistance(double distance)
@@ -28,14 +29,13 @@ namespace Lookit.Models
             _enteredDistance = distance;
         }
 
-        public static Scale Default => new Scale(new Point(100, 100), new Point(500, 500), 1);
+        public static Scale Default => new Scale(Point.Empty, Point.Empty, 0, ScaleUnit.None);
 
         public Scale UpdateDistance(double distance)
         {
-            return new Scale(First, Second, distance);
+            return new Scale(First, Second, distance, Unit);
         }
 
         public override string ToString() => $"{First.X} {First.Y}, {Second.X} {Second.Y}";
-        
     }
 }

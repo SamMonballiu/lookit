@@ -25,7 +25,7 @@ namespace Lookit.ViewModels
 
         public void UpdateScale()
         {
-            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), Scale);
+            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), Scale, ScaleUnit.None);
             OnScaleConfirmed?.Invoke();
         }
     }
