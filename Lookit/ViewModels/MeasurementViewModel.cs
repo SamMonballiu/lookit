@@ -3,25 +3,19 @@ using Lookit.Models;
 using System;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Lookit.Extensions;
 
 namespace Lookit.ViewModels
 {
-    public class PolygonMeasurementViewModel : ObservableObject
+    public partial class PolygonMeasurementViewModel : ObservableObject
     {
         public PolygonalMeasurement Measurement { get; }
         public string Points => string.Join(",", Measurement.Points.Select(p => $"{p.X}, {p.Y}"));
-        private Scale _scale;
         public System.Windows.Point Center => GetCenter();
 
-        public Scale Scale
-        {
-            get => _scale;
-            set
-            {
-                SetProperty(ref _scale, value);
-                OnPropertyChanged(nameof(Area));
-            }
-        }
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(Area))]
+        private Scale _scale;
+        
 
         private System.Windows.Point GetCenter()
         {
@@ -41,7 +35,7 @@ namespace Lookit.ViewModels
                 );
         }
 
-        public string Area => Math.Abs(Measurement.GetScaledArea(_scale) ?? 0).ToString("F");
+        public string Area => $"{Math.Abs(Measurement.GetScaledArea(_scale) ?? 0).ToString("F")} {Scale.Unit.ToSquaredString()}";
 
         private PolygonMeasurementViewModel(PolygonalMeasurement measurement, Scale scale)
         {
@@ -53,20 +47,11 @@ namespace Lookit.ViewModels
         public static PolygonMeasurementViewModel From(PolygonalMeasurement measurement, Scale scale) => new PolygonMeasurementViewModel(measurement, scale);
     }
 
-    public class LineMeasurementViewModel : ObservableObject
+    public partial class LineMeasurementViewModel : ObservableObject
     {
         public LineMeasurement Measurement { get; }
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(ScaledDistance))]
         private Scale _scale;
-
-        public Scale Scale
-        {
-            get => _scale;
-            set
-            {
-                SetProperty(ref _scale, value);
-                OnPropertyChanged(nameof(ScaledDistance));
-            }
-        }
 
         public string ScaledDistance => (Measurement.GetScaledDistance(_scale) ?? 0).ToString("F");
 

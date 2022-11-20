@@ -133,10 +133,10 @@
                                     <Polygon 
                                         Points="{Binding Path=Points}" 
                                         Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" 
-                                        Opacity=".65" 
+                                        Opacity=".85" 
                                         StrokeThickness="2"
                                         />
-                                    <Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Area}" Width="60" Height="40" Background="Transparent" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Area}" Width="180" Height="40" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <Label.Margin>
                                             <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
                                                 <Binding Path="Center"/>
