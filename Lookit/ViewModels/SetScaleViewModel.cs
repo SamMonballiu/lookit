@@ -12,8 +12,12 @@ namespace Lookit.ViewModels
     public partial class SetScaleViewModel : ObservableObject
     {
         [ObservableProperty] private string _title;
-        [ObservableProperty] private double _scale;
+        [ObservableProperty] private double _scaleDistance;
         [ObservableProperty] private (Point First, Point Second) _points;
+        [ObservableProperty] private ScaleUnit _scaleUnit = ScaleContext.Scale.Equals(Scale.Default) 
+            ? ScaleUnit.Meters 
+            : ScaleContext.Scale.Unit;
+
         public ICommand ConfirmScale { get; set; }
         public event Action OnScaleConfirmed;
 
@@ -25,7 +29,7 @@ namespace Lookit.ViewModels
 
         public void UpdateScale()
         {
-            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), Scale, ScaleUnit.None);
+            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), _scaleDistance, _scaleUnit);
             OnScaleConfirmed?.Invoke();
         }
     }
