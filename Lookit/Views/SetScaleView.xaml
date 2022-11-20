@@ -3,13 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:Lookit.UserControls"
         xmlns:viewmodels="clr-namespace:Lookit.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SetScaleViewModel}"
         mc:Ignorable="d"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Title="{Binding Title}" SizeToContent="WidthAndHeight">
     <StackPanel Margin="8" Width="240">
         <Label FontSize="14">Set scale distance</Label>
-        <TextBox Text="{Binding Scale}" x:Name="txtScale"/>
+        <uc:ScalePicker ScaleDistance="{Binding ScaleDistance, Mode=TwoWay}" ScaleUnit="{Binding ScaleUnit, Mode=TwoWay}" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
             <Button Width="64" IsDefault="True" Command="{Binding ConfirmScale}" CommandParameter="{Binding Points}">Confirm</Button>
         </StackPanel>

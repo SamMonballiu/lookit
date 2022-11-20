@@ -134,7 +134,7 @@
                                     <Polygon 
                                         Points="{Binding Path=Points}" 
                                         Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" 
-                                        Opacity=".65" 
+                                        Opacity=".85" 
                                         StrokeThickness="2"
                                         />
                                     <Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Value}" Width="180" Height="40" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">

@@ -3,6 +3,7 @@ using Lookit.Models;
 using System;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Lookit.Extensions;
 
 namespace Lookit.ViewModels
 {
@@ -25,7 +26,6 @@ namespace Lookit.ViewModels
     public partial class PolygonMeasurementViewModel : MeasurementViewModel
     {
         public string Points => string.Join(",", Measurement.Points.Select(p => $"{p.X}, {p.Y}"));
-        private Scale _scale;
         public System.Windows.Point Center => GetCenter();
 
         public override string Value => $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0).ToString("F")} {Scale.Unit.ToSquaredString()}";
