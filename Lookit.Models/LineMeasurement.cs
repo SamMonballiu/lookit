@@ -5,15 +5,14 @@ using System.Drawing;
 
 namespace Lookit.Models
 {
-    public class LineMeasurement
+    public class LineMeasurement : Measurement
     {
-        public Point Start { get; private set; }
-        public Point End { get; private set; }
+        public Point Start => Points.First();
+        public Point End => Points.Last();
         public double Distance => GetDistance(Start, End);
         public LineMeasurement(Point first, Point second)
         {
-            Start = first;
-            End = second;
+            Points = new List<Point>() { first, second };
         }
 
         private double GetDistance(Point first, Point second)
@@ -37,12 +36,14 @@ namespace Lookit.Models
 
             if (AreNear(Start.X, End.X))
             {
-                End = new Point(Start.X, End.Y);
+                Points.RemoveAt(1);
+                Points.Insert(1, new Point(Start.X, End.Y));
             }
 
             if (AreNear(Start.Y, End.Y))
             {
-                End = new Point(End.X, Start.Y);
+                Points.RemoveAt(1);
+                Points.Insert(1, new Point(End.X, Start.Y));
             }
         }
 

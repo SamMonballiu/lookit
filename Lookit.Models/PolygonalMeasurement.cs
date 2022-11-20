@@ -3,16 +3,17 @@ using System.Drawing;
 
 namespace Lookit.Models
 {
-    public class PolygonalMeasurement
+    public abstract class Measurement
     {
-        public List<Point> Points { get; private set; }
+        public List<Point> Points { get; protected set; }
+    }
 
+    public class PolygonalMeasurement : Measurement
+    {
         public PolygonalMeasurement(List<Point> points)
         {
             Points = points;
         }
-
-        public double Area => CalculateArea.CalculateArea.Polygon(Points);
 
         public double? GetScaledArea(Scale scale)
         {
@@ -21,7 +22,8 @@ namespace Lookit.Models
                 return null;
             }
 
-            return Area * scale.Factor * scale.Factor;
+            var area = CalculateArea.CalculateArea.Polygon(Points);
+            return area * scale.Factor * scale.Factor;
         }
     }
 }
