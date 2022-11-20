@@ -9,13 +9,9 @@ namespace Lookit.Views
     /// </summary>
     public partial class SetScaleView : Window
     {
-
-
         public SetScaleView(Point first, Point second)
         {
             InitializeComponent();
-            txtScale.Focus();
-            txtScale.SelectAll();
             DataContext = new SetScaleViewModel();
             (DataContext as SetScaleViewModel).Points = (first, second);
             (DataContext as SetScaleViewModel).OnScaleConfirmed += () => Close();
