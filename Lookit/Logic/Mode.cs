@@ -4,6 +4,7 @@
     {
         None,
         Scale,
-        Measure
+        MeasurePolygon,
+        MeasureLine
     }
 }

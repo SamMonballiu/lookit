@@ -20,7 +20,11 @@ namespace Lookit.ViewModels
         {
             Measurement = measurement;
             _scale = scale;
-            ScaleContext.OnScaleChanged += newScale => _scale = newScale;
+            ScaleContext.OnScaleChanged += newScale =>
+            {
+                _scale = newScale;
+                OnPropertyChanged(nameof(Value));
+            };
         }
     }
 
@@ -52,7 +56,7 @@ namespace Lookit.ViewModels
 
     public partial class LineMeasurementViewModel : MeasurementViewModel
     {
-        public override string Value => ((Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0).ToString("F");
+        public override string Value => $"{(Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0:F} {Scale.Unit.ToShortString()}";
 
         public LineMeasurementViewModel(LineMeasurement measurement, Scale scale)
             : base(measurement, scale) { }

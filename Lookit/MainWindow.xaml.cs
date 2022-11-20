@@ -44,7 +44,7 @@ namespace Lookit
                 try
                 {
                     var measurement = Viewmodel.Measurements[ListMeasurements.SelectedIndex]?.Measurement;
-                    SelectedMeasurementContext.SelectedMeasurement = measurement;
+                    SelectedMeasurementContext.SelectedMeasurement = (PolygonalMeasurement)measurement; //TODO
                 } catch
                 {
                     //TODO Fix
@@ -100,7 +100,12 @@ namespace Lookit
 
         private void BtnMeasure_Click(object sender, RoutedEventArgs e)
         {
-            Viewmodel.Mode = Mode.Measure;
+            Viewmodel.Mode = Mode.MeasurePolygon; //TODO!
+        }
+
+        private void BtnMeasureLine_Click(object sender, RoutedEventArgs e)
+        {
+            Viewmodel.Mode = Mode.MeasureLine;
         }
 
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
@@ -162,5 +167,7 @@ namespace Lookit
         {
             ShowPdfPicker();
         }
+
+        
     }
 }

@@ -52,6 +52,7 @@
                 <Button Name="btnOpenFile" Content="Open" Click="btnOpenFile_Click"/>
                 <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
                 <Button Name="BtnMeasure" Click="BtnMeasure_Click">Area</Button>
+                <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">Line</Button>
                 <StackPanel VerticalAlignment="Center">
                     <CheckBox IsChecked="{Binding Straighten}">
                         Straighten?
@@ -146,6 +147,53 @@
                                             </MultiBinding>
                                         </Label.Margin>
                                     </Label>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding Path=LineMeasurements}" Grid.RowSpan="3">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Cursor="Cross" Opacity="1" 
+                                    MouseUp="ImgControl_OnMouseUp" 
+                                    Name="CnvMeasure" 
+                                    Grid.Row="0" Grid.Column="0"  
+                                    Background="Transparent"
+                                >
+                                    <Canvas.LayoutTransform>
+                                        <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
+                                    </Canvas.LayoutTransform>
+
+                                </Canvas>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <!--<Polygon 
+                                        Points="{Binding Path=Points}" 
+                                        Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" 
+                                        Opacity=".85" 
+                                        StrokeThickness="2"
+                                        />-->
+
+                                    <Line DataContext="{Binding Measurement}" Stroke="Pink" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                        X1="{Binding Start.X}" 
+                                        Y1="{Binding Start.Y}"
+                                        X2="{Binding End.X}"
+                                        Y2="{Binding End.Y}">
+                                    </Line>
+
+                                    <!--<Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Value}" Width="180" Height="40" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                        <Label.Margin>
+                                            <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
+                                                <Binding Path="Center"/>
+                                                <Binding Path="Width" RelativeSource="{RelativeSource Mode=Self}" />
+                                                <Binding Path="Height" RelativeSource="{RelativeSource Mode=Self}" />
+                                            </MultiBinding>
+                                        </Label.Margin>
+                                    </Label>-->
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

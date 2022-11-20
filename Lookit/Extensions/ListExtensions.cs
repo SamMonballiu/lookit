@@ -27,5 +27,16 @@ namespace Lookit.Extensions
                 _ => throw new NotSupportedException()
             };
         }
+
+        public static string ToShortString(this ScaleUnit unit)
+        {
+            return unit switch
+            {
+                ScaleUnit.None => string.Empty,
+                ScaleUnit.Meters => "m",
+                ScaleUnit.Centimeters => "cm",
+                _ => throw new NotSupportedException()
+            };
+        }
     }
 }

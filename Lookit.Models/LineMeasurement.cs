@@ -26,25 +26,8 @@ namespace Lookit.Models
             }
 
             var clickedDistance = GetDistance(Start, End);
-            var measureDistance = clickedDistance * scale.Factor;
-            return measureDistance;
-        }
-
-        public void Straighten(int maxDistance)
-        {
-            Func<int, int, bool> AreNear = (first, second) => Math.Abs(first - second) < maxDistance;
-
-            if (AreNear(Start.X, End.X))
-            {
-                Points.RemoveAt(1);
-                Points.Insert(1, new Point(Start.X, End.Y));
-            }
-
-            if (AreNear(Start.Y, End.Y))
-            {
-                Points.RemoveAt(1);
-                Points.Insert(1, new Point(End.X, Start.Y));
-            }
+            var scaledDistance = clickedDistance * scale.Factor;
+            return scaledDistance;
         }
 
         public override string ToString() => $"({Start.X},{Start.Y}) - ({End.X},{End.Y}) Dist: {Math.Round(Distance, 2)}";
