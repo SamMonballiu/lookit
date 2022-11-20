@@ -6,22 +6,29 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lookit.ViewModels
 {
-    public class PolygonMeasurementViewModel : ObservableObject
+    public abstract partial class MeasurementViewModel : ObservableObject
     {
-        public PolygonalMeasurement Measurement { get; }
+        public abstract string Value { get; }
+
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(Value))]
+        protected Scale _scale;
+
+        public Measurement Measurement { get; }
+
+        public MeasurementViewModel(Measurement measurement)
+        {
+            Measurement = measurement;
+        }
+
+    }
+
+    public partial class PolygonMeasurementViewModel : MeasurementViewModel
+    {
         public string Points => string.Join(",", Measurement.Points.Select(p => $"{p.X}, {p.Y}"));
         private Scale _scale;
         public System.Windows.Point Center => GetCenter();
 
-        public Scale Scale
-        {
-            get => _scale;
-            set
-            {
-                SetProperty(ref _scale, value);
-                OnPropertyChanged(nameof(Area));
-            }
-        }
+        public override string Value => $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0).ToString("F")} {Scale.Unit.ToSquaredString()}";
 
         private System.Windows.Point GetCenter()
         {
@@ -41,39 +48,24 @@ namespace Lookit.ViewModels
                 );
         }
 
-        public string Area => Math.Abs(Measurement.GetScaledArea(_scale) ?? 0).ToString("F");
-
         private PolygonMeasurementViewModel(PolygonalMeasurement measurement, Scale scale)
+            : base(measurement)
         {
-            Measurement = measurement;
-            _scale = scale;
+            Scale = scale;
             ScaleContext.OnScaleChanged += newScale => Scale = newScale;
         }
 
         public static PolygonMeasurementViewModel From(PolygonalMeasurement measurement, Scale scale) => new PolygonMeasurementViewModel(measurement, scale);
     }
 
-    public class LineMeasurementViewModel : ObservableObject
+    public partial class LineMeasurementViewModel : MeasurementViewModel
     {
-        public LineMeasurement Measurement { get; }
-        private Scale _scale;
+        public override string Value => ((Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0).ToString("F");
 
-        public Scale Scale
+        public LineMeasurementViewModel(LineMeasurement measurement, Scale scale)
+            : base(measurement)
         {
-            get => _scale;
-            set
-            {
-                SetProperty(ref _scale, value);
-                OnPropertyChanged(nameof(ScaledDistance));
-            }
-        }
-
-        public string ScaledDistance => (Measurement.GetScaledDistance(_scale) ?? 0).ToString("F");
-
-        private LineMeasurementViewModel(LineMeasurement measurement, Scale scale)
-        {
-            Measurement = measurement;
-            _scale = scale;
+            Scale = scale;
             ScaleContext.OnScaleChanged += newScale => Scale = newScale;
         }
 
