@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Lookit.UserControls.ScalePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Lookit.UserControls"
+             xmlns:enums="clr-namespace:Lookit.Models;assembly=Lookit.Models"
+             xmlns:extend="clr-namespace:Lookit.Extensions"
+             
+             mc:Ignorable="d" 
+             x:Name="me"
+             d:DesignHeight="40" d:DesignWidth="800">
+    <DockPanel>
+        <TextBox Focusable="True" DockPanel.Dock="Left" Width="100" Text="{Binding ScaleDistance, ElementName=me}" Margin="0 0 12 0" Name="txtScale"/>
+        <ComboBox DockPanel.Dock="Left" 
+                ItemsSource="{Binding Source={extend:EnumBindingSource {x:Type enums:ScaleUnit}}}"
+                SelectedValue="{Binding ScaleUnit, ElementName=me}">
+        </ComboBox>
+    </DockPanel>
+</UserControl>
