@@ -16,11 +16,12 @@ namespace Lookit.ViewModels
 
         public Measurement Measurement { get; }
 
-        public MeasurementViewModel(Measurement measurement)
+        public MeasurementViewModel(Measurement measurement, Scale scale)
         {
             Measurement = measurement;
+            _scale = scale;
+            ScaleContext.OnScaleChanged += newScale => _scale = newScale;
         }
-
     }
 
     public partial class PolygonMeasurementViewModel : MeasurementViewModel
@@ -28,7 +29,7 @@ namespace Lookit.ViewModels
         public string Points => string.Join(",", Measurement.Points.Select(p => $"{p.X}, {p.Y}"));
         public System.Windows.Point Center => GetCenter();
 
-        public override string Value => $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0).ToString("F")} {Scale.Unit.ToSquaredString()}";
+        public override string Value => $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0):F} {Scale.Unit.ToSquaredString()}";
 
         private System.Windows.Point GetCenter()
         {
@@ -43,19 +44,10 @@ namespace Lookit.ViewModels
             var centerX = leftMost.X + (rightMost.X - leftMost.X) / 2;
             var centerY = highest.Y + (lowest.Y - highest.Y) / 2;
 
-            return new System.Windows.Point(
-                    centerX, centerY
-                );
+            return new System.Windows.Point(centerX, centerY);
         }
 
-        private PolygonMeasurementViewModel(PolygonalMeasurement measurement, Scale scale)
-            : base(measurement)
-        {
-            Scale = scale;
-            ScaleContext.OnScaleChanged += newScale => Scale = newScale;
-        }
-
-        public static PolygonMeasurementViewModel From(PolygonalMeasurement measurement, Scale scale) => new PolygonMeasurementViewModel(measurement, scale);
+        public PolygonMeasurementViewModel(Measurement measurement, Scale scale) : base(measurement, scale) { }
     }
 
     public partial class LineMeasurementViewModel : MeasurementViewModel
@@ -63,12 +55,6 @@ namespace Lookit.ViewModels
         public override string Value => ((Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0).ToString("F");
 
         public LineMeasurementViewModel(LineMeasurement measurement, Scale scale)
-            : base(measurement)
-        {
-            Scale = scale;
-            ScaleContext.OnScaleChanged += newScale => Scale = newScale;
-        }
-
-        public static LineMeasurementViewModel From(LineMeasurement measurement, Scale scale) => new LineMeasurementViewModel(measurement, scale);
+            : base(measurement, scale) { }
     }
 }
