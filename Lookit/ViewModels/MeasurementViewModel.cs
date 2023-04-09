@@ -17,6 +17,9 @@ namespace Lookit.ViewModels
         [ObservableProperty]
         protected string _name;
 
+        [ObservableProperty]
+        protected bool _hidden;
+
         public Measurement Measurement { get; }
 
         public MeasurementViewModel(Measurement measurement, Scale scale, string name)

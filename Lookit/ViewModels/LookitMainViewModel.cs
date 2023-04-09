@@ -64,6 +64,7 @@ namespace Lookit.ViewModels
         public ICommand OnAddPoint { get; private set; }
         public ICommand OnRemovePoint { get; private set; }
         public ICommand OnRemoveMeasurement { get; private set; }
+        public ICommand OnToggleMeasurementHidden { get; private set; }
         public ICommand OnSetImageSource { get; private set; }
         public ICommand OnSwitchMode { get; private set; }
         
@@ -170,6 +171,10 @@ namespace Lookit.ViewModels
                 Measurements.Remove(measurement);
                 OnPropertyChanged(nameof(PolygonMeasurements));
                 OnPropertyChanged(nameof(LineMeasurements));
+            });
+            OnToggleMeasurementHidden = new RelayCommand<MeasurementViewModel>(measurement =>
+            {
+                measurement.Hidden = !measurement.Hidden;
             });
             OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
             ScaleContext.OnScaleChanged += (_) => OnPropertyChanged(nameof(Scale));
