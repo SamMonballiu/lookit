@@ -38,7 +38,11 @@ namespace Lookit.Views
 
             using (var stream = new InMemoryRandomAccessStream())
             {
-                var options = new PdfPageRenderOptions { DestinationWidth = 1920 };
+                var options = new PdfPageRenderOptions
+                {
+                    DestinationWidth = (uint)(page.Dimensions.MediaBox.Width * 1),
+                    DestinationHeight = (uint)(page.Dimensions.MediaBox.Height * 1),
+                };
                 await page.RenderToStreamAsync(stream, options);
 
                 image.BeginInit();
