@@ -55,6 +55,9 @@ namespace Lookit.ViewModels
         private BitmapSource _imageSource;
 
         [ObservableProperty]
+        private Measurement _selectedMeasurement;
+
+        [ObservableProperty]
         private bool _straighten = true;
 
         public ICommand OnPasteImage { get; private set; }

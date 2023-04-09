@@ -43,8 +43,7 @@ namespace Lookit
             {
                 try
                 {
-                    var measurement = Viewmodel.Measurements[ListMeasurements.SelectedIndex]?.Measurement;
-                    SelectedMeasurementContext.SelectedMeasurement = (PolygonalMeasurement)measurement; //TODO
+                    Viewmodel.SelectedMeasurement = Viewmodel.Measurements[ListMeasurements.SelectedIndex]?.Measurement;
                 } catch
                 {
                     //TODO Fix
@@ -168,6 +167,9 @@ namespace Lookit
             ShowPdfPicker();
         }
 
-        
+        private void ListMeasurements_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

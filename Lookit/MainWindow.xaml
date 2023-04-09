@@ -11,7 +11,7 @@
         WindowState="Maximized"
         Title="MainWindow" Height="800" Width="800">
     <Window.Resources>
-        <valueconverters:PolygonalMeasurementToColorBrushConverter x:Key="measurementColorConverter" />
+        <valueconverters:MeasurementToColorBrushConverter x:Key="measurementColorConverter" />
         <valueconverters:PointToThicknessConverter x:Key="pointToThicknessConverter" />
         <valueconverters:LineLabelPositionConverter x:Key="lineLabelPositionConverter" />
     </Window.Resources>
@@ -21,7 +21,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Column="0" Grid.Row="0">
-            <TextBlock Text="{Binding Measurements.Count}" />
             <ListBox ItemsSource="{Binding Measurements}" x:Name="ListMeasurements">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -135,10 +134,16 @@
                                 <Grid>
                                     <Polygon 
                                         Points="{Binding Path=Points}" 
-                                        Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" 
                                         Opacity=".85" 
                                         StrokeThickness="2"
-                                        />
+                                        >
+                                        <Polygon.Fill>
+                                            <MultiBinding Converter="{StaticResource measurementColorConverter}">
+                                                <Binding Path="Measurement" />
+                                                <Binding Path="DataContext.SelectedMeasurement" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
+                                            </MultiBinding>
+                                        </Polygon.Fill>
+                                    </Polygon>
                                     <Label FontSize="18" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <Label.Margin>
                                             
@@ -173,18 +178,17 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <!--<Polygon 
-                                        Points="{Binding Path=Points}" 
-                                        Fill="{Binding Path=Measurement, Converter={StaticResource measurementColorConverter}}" 
-                                        Opacity=".85" 
-                                        StrokeThickness="2"
-                                        />-->
-
-                                    <Line DataContext="{Binding Measurement}" x:Name="line" Stroke="Pink" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                    <Line DataContext="{Binding Measurement}" x:Name="line" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
                                         X1="{Binding Start.X}" 
                                         Y1="{Binding Start.Y}"
                                         X2="{Binding End.X}"
                                         Y2="{Binding End.Y}">
+                                        <Line.Stroke>
+                                            <MultiBinding Converter="{StaticResource measurementColorConverter}">
+                                                <Binding />
+                                                <Binding Path="DataContext.SelectedMeasurement" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
+                                            </MultiBinding>
+                                        </Line.Stroke>
                                     </Line>
 
                                     <Label FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="60" Height="24" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
