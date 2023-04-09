@@ -13,6 +13,7 @@
     <Window.Resources>
         <valueconverters:PolygonalMeasurementToColorBrushConverter x:Key="measurementColorConverter" />
         <valueconverters:PointToThicknessConverter x:Key="pointToThicknessConverter" />
+        <valueconverters:LineLabelPositionConverter x:Key="lineLabelPositionConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -138,8 +139,9 @@
                                         Opacity=".85" 
                                         StrokeThickness="2"
                                         />
-                                    <Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Value}" Width="180" Height="40" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <Label FontSize="18" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
                                         <Label.Margin>
+                                            
                                             <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
                                                 <Binding Path="Center"/>
                                                 <Binding Path="Width" RelativeSource="{RelativeSource Mode=Self}" />
@@ -178,22 +180,26 @@
                                         StrokeThickness="2"
                                         />-->
 
-                                    <Line DataContext="{Binding Measurement}" Stroke="Pink" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                    <Line DataContext="{Binding Measurement}" x:Name="line" Stroke="Pink" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
                                         X1="{Binding Start.X}" 
                                         Y1="{Binding Start.Y}"
                                         X2="{Binding End.X}"
                                         Y2="{Binding End.Y}">
                                     </Line>
 
-                                    <!--<Label FontSize="18" FontWeight="Bold" Content="{Binding Path=Value}" Width="180" Height="40" Opacity=".75" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <Label FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="60" Height="24" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                        
                                         <Label.Margin>
-                                            <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
-                                                <Binding Path="Center"/>
+                                            <MultiBinding Converter="{StaticResource lineLabelPositionConverter}">
+                                                <Binding Path="X1" ElementName="line"/>
+                                                <Binding Path="Y1" ElementName="line"/>
+                                                <Binding Path="X2" ElementName="line"/>
+                                                <Binding Path="Y2" ElementName="line"/>
                                                 <Binding Path="Width" RelativeSource="{RelativeSource Mode=Self}" />
                                                 <Binding Path="Height" RelativeSource="{RelativeSource Mode=Self}" />
                                             </MultiBinding>
                                         </Label.Margin>
-                                    </Label>-->
+                                    </Label>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
