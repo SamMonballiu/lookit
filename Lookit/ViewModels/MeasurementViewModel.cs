@@ -14,12 +14,16 @@ namespace Lookit.ViewModels
         [ObservableProperty, NotifyPropertyChangedFor(nameof(Value))]
         protected Scale _scale;
 
+        [ObservableProperty]
+        protected string _name;
+
         public Measurement Measurement { get; }
 
-        public MeasurementViewModel(Measurement measurement, Scale scale)
+        public MeasurementViewModel(Measurement measurement, Scale scale, string name)
         {
             Measurement = measurement;
             _scale = scale;
+            _name = name;
             ScaleContext.OnScaleChanged += newScale =>
             {
                 _scale = newScale;
@@ -51,14 +55,14 @@ namespace Lookit.ViewModels
             return new System.Windows.Point(centerX, centerY);
         }
 
-        public PolygonMeasurementViewModel(Measurement measurement, Scale scale) : base(measurement, scale) { }
+        public PolygonMeasurementViewModel(Measurement measurement, Scale scale, string name) : base(measurement, scale, name) { }
     }
 
     public partial class LineMeasurementViewModel : MeasurementViewModel
     {
         public override string Value => $"{(Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0:F} {Scale.Unit.ToShortString()}";
 
-        public LineMeasurementViewModel(LineMeasurement measurement, Scale scale)
-            : base(measurement, scale) { }
+        public LineMeasurementViewModel(LineMeasurement measurement, Scale scale, string name)
+            : base(measurement, scale, name) { }
     }
 }

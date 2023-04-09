@@ -28,17 +28,26 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions >
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
 
-                            <Button Grid.Column="0"
-                                    Margin="0 0 8 0"
-                                Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.OnRemoveMeasurement}"
-                                CommandParameter="{Binding}"
-                                Cursor="Hand"
-                                >
-                                <Image Source="/Assets/action_stop.gif" Height="16" Width="16"/>
-                            </Button>
-                            <TextBlock VerticalAlignment="Center" Grid.Column="1" Text="{Binding Value}"/>
+                            <TextBox BorderThickness="0" Background="Transparent" Margin="0 0 0 8" VerticalAlignment="Center" FontSize="14" Text="{Binding Name, Mode=TwoWay}" />
+                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                                <Button Width="24"
+                                        Margin="0 0 8 0"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.OnRemoveMeasurement}"
+                                    CommandParameter="{Binding}"
+                                    Cursor="Hand"
+                                    >
+                                    <Image Source="/Assets/action_stop.gif" Height="16" Width="16"/>
+                                </Button>
+                                <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Text="{Binding Value}" FontWeight="Bold"/>
+                            </StackPanel>
+                            
                         </Grid>
 
                     </DataTemplate>

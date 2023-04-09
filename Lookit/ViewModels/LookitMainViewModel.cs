@@ -97,7 +97,7 @@ namespace Lookit.ViewModels
                 }
 
                 var measurement = new LineMeasurement(_tempPoints.First(), point);
-                Measurements.Add(new LineMeasurementViewModel(measurement, Scale));
+                Measurements.Add(new LineMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 OnPropertyChanged(nameof(LineMeasurements));
                 TempPoints.Clear();
                 return;
@@ -118,7 +118,7 @@ namespace Lookit.ViewModels
             } else if (point.IsClose(TempPoints.ElementAt(0)))
             {
                 var measurement = new PolygonalMeasurement(TempPoints.ToList());
-                Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale));
+                Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 TempPoints.Clear();
                 OnPropertyChanged(nameof(PolygonMeasurements));
             }
