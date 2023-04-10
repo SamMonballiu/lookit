@@ -218,6 +218,10 @@ namespace Lookit.ViewModels
             {
                 Scale = scale;
                 OnPropertyChanged(nameof(Scale));
+                foreach (var measurement in _pagedMeasurements[_selectedPage])
+                {
+                    measurement.Scale = scale;
+                }
             });
         }
     }
