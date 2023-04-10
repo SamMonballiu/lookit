@@ -106,14 +106,14 @@
 
                 </StackPanel>
             </StackPanel>
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#ddd">
+            <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#ddd">
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width=".33*" />
                     </Grid.ColumnDefinitions>
                     
-                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White">
+                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White" >
                         <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ImgMain" RenderOptions.BitmapScalingMode="HighQuality">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />

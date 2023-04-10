@@ -99,7 +99,7 @@ namespace Lookit.ViewModels
         public ICommand OnSwitchMode { get; private set; }
         public ICommand OnSetScale { get; private set; }
         
-        private static bool IsControlDown()
+        public static bool IsControlDown()
         {
             return (Control.ModifierKeys & Keys.Control) == Keys.Control;
         }

@@ -61,5 +61,21 @@ namespace Lookit.UserControls
             BtnZoomIn.IsEnabled = dropdown.SelectedIndex < _zoomOptions.Length - 1;
             BtnZoomOut.IsEnabled = dropdown.SelectedIndex > 0;
         }
+
+        public void ZoomIn()
+        {
+            if (BtnZoomIn.IsEnabled)
+            {
+                ddnZoom.SelectedIndex++;
+            }
+        }
+
+        public void ZoomOut()
+        {
+            if (BtnZoomOut.IsEnabled)
+            {
+                ddnZoom.SelectedIndex--;
+            }
+        }
     }
 }

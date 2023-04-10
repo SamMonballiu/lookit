@@ -134,5 +134,22 @@ namespace Lookit
         {
             ShowPdfPicker();
         }
+
+        private void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (!LookitMainViewModel.IsControlDown())
+            {
+                return;
+            }
+
+            if (e.Delta > 0)
+            {
+                zoomPicker.ZoomIn();
+            } 
+            else
+            {
+                zoomPicker.ZoomOut();
+            }
+        }
     }
 }
