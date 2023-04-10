@@ -27,18 +27,48 @@ namespace Lookit.ViewModels
             _mode = Mode.MeasurePolygon;
         }
 
-        public Scale Scale => ScaleContext.Scale;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
+        [NotifyPropertyChangedFor(nameof(LineMeasurements))]
+        [NotifyPropertyChangedFor(nameof(Measurements))]
+        [NotifyPropertyChangedFor(nameof(Scale))]
+        protected int _selectedPage = 1;
+
+        private Dictionary<int, ObservableCollection<MeasurementViewModel>> _pagedMeasurements = new();
+        private Dictionary<int, Scale> _pagedScales = new();
+
+        public Scale Scale
+        {
+            get
+            {
+                if (!_pagedScales.ContainsKey(_selectedPage))
+                {
+                    _pagedScales.Add(_selectedPage, Scale.Default);
+                }
+                return _pagedScales[_selectedPage];
+            } set
+            {
+                _pagedScales[_selectedPage] = value;
+            }
+        }
+
+        public ObservableCollection<MeasurementViewModel> Measurements
+        {
+            get
+            {
+                if (!_pagedMeasurements.ContainsKey(_selectedPage))
+                {
+                    _pagedMeasurements.Add(_selectedPage, new ObservableCollection<MeasurementViewModel>());
+                }
+                return _pagedMeasurements[_selectedPage];
+            }
+        }
 
         [ObservableProperty]
         private double _zoomLevel = 1;
 
         [ObservableProperty]
         private Mode _mode = Mode.MeasurePolygon;
-        
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
-        [NotifyPropertyChangedFor(nameof(LineMeasurements))]
-        private ObservableCollection<MeasurementViewModel> _measurements = new();
 
         public IEnumerable<PolygonMeasurementViewModel> PolygonMeasurements => Measurements.OfType<PolygonMeasurementViewModel>();
         public IEnumerable<LineMeasurementViewModel> LineMeasurements => Measurements.OfType<LineMeasurementViewModel>();
@@ -67,6 +97,7 @@ namespace Lookit.ViewModels
         public ICommand OnToggleMeasurementHidden { get; private set; }
         public ICommand OnSetImageSource { get; private set; }
         public ICommand OnSwitchMode { get; private set; }
+        public ICommand OnSetScale { get; private set; }
         
         private static bool IsControlDown()
         {
@@ -177,7 +208,11 @@ namespace Lookit.ViewModels
                 measurement.Hidden = !measurement.Hidden;
             });
             OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
-            ScaleContext.OnScaleChanged += (_) => OnPropertyChanged(nameof(Scale));
+            OnSetScale = new RelayCommand<Scale>(scale =>
+            {
+                Scale = scale;
+                OnPropertyChanged(nameof(Scale));
+            });
         }
     }
 }

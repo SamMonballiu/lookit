@@ -32,28 +32,6 @@ namespace Lookit.Views
             }
         }
 
-        private static async Task<BitmapImage> PageToBitmapAsync(PdfPage page)
-        {
-            BitmapImage image = new BitmapImage();
-
-            using (var stream = new InMemoryRandomAccessStream())
-            {
-                var options = new PdfPageRenderOptions
-                {
-                    DestinationWidth = (uint)(page.Dimensions.MediaBox.Width * 1),
-                    DestinationHeight = (uint)(page.Dimensions.MediaBox.Height * 1),
-                };
-                await page.RenderToStreamAsync(stream, options);
-
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream.AsStream();
-                image.EndInit();
-            }
-
-            return image;
-        }
-
         private async void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -84,7 +62,7 @@ namespace Lookit.Views
 
             using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
             {
-                var img = await PageToBitmapAsync(page);
+                var img = await Helpers.PDF.PageToBitmapAsync(page);
                 PageContext.Store(pageNumber, img);
                 Viewmodel.OnSetImageSource.Execute(img);
             }

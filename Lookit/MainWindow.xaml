@@ -14,7 +14,6 @@
         <valueconverters:MeasurementToColorBrushConverter x:Key="measurementColorConverter" />
         <valueconverters:PointToThicknessConverter x:Key="pointToThicknessConverter" />
         <valueconverters:LineLabelPositionConverter x:Key="lineLabelPositionConverter" />
-        <valueconverters:BooleanToHideTextConverter x:Key="hideBtnTextConverter" />
         <valueconverters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
@@ -23,6 +22,9 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Column="0" Grid.Row="0">
+            <ComboBox DockPanel.Dock="Top" x:Name="ddnPages"/>
+
+
             <ListBox ItemsSource="{Binding Measurements}" x:Name="ListMeasurements">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -121,7 +123,9 @@
 
                     <Polygon Grid.Row="0" Grid.Column="0" 
                              Points="{Binding Path=TempPointsString}" 
-                             Stroke="Red" 
+                             Stroke="Red"
+                             StrokeDashArray="3"
+                             StrokeDashCap="Round"
                              StrokeThickness="1"
                     >
                         <Polygon.LayoutTransform>
@@ -130,7 +134,7 @@
                     </Polygon>
 
                     <Canvas Cursor="Cross" Opacity="1" 
-                            Grid.Row="0" Grid.Column="0"  
+                            Grid.Row="0" Grid.Column="0"
                             Background="Transparent"
                     >
                         <Canvas.LayoutTransform>
@@ -143,7 +147,7 @@
                               X2="{Binding Second.X}"
                               Y2="{Binding Second.Y}">
                         </Line>
-                        <Ellipse Height="6" Width="6" Fill="Red" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
+                        <Ellipse Height="4" Width="4" Fill="Red" Margin="1 1 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
                     </Canvas>
 
                     <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">

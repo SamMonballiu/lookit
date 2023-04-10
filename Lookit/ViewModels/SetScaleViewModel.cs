@@ -19,7 +19,7 @@ namespace Lookit.ViewModels
             : ScaleContext.Scale.Unit;
 
         public ICommand ConfirmScale { get; set; }
-        public event Action OnScaleConfirmed;
+        public event Action<Scale> OnScaleConfirmed;
 
         public SetScaleViewModel()
         {
@@ -29,8 +29,8 @@ namespace Lookit.ViewModels
 
         public void UpdateScale()
         {
-            ScaleContext.Scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), _scaleDistance, _scaleUnit);
-            OnScaleConfirmed?.Invoke();
+            var scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), _scaleDistance, _scaleUnit);
+            OnScaleConfirmed?.Invoke(scale);
         }
     }
 }

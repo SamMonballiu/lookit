@@ -27,8 +27,9 @@ namespace Lookit
 
         public LookitMainViewModel Viewmodel => (DataContext as LookitMainViewModel);
 
-        private Point? _clickedPoint;
+        //private readonly Dictionary<int, LookitMainViewModel> _viewmodels = new Dictionary<int, LookitMainViewModel>();
 
+        private Point? _clickedPoint;
 
         public MainWindow()
         {
@@ -49,13 +50,46 @@ namespace Lookit
                     //TODO Fix
                 }
             };
+
+            if (PageContext.PDF != null)
+            {
+                var pages = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
+                //foreach (var page in pages)
+                //{
+                //   if (!_viewmodels.ContainsKey(page))
+                //    {
+                //        _viewmodels.Add(page, new LookitMainViewModel());
+                //    }
+                //}
+                //this.DataContext = _viewmodels[PageContext.SelectedPage];
+                ddnPages.ItemsSource = pages;
+                ddnPages.SelectedValue = PageContext.SelectedPage;
+                ddnPages.SelectionChanged += DdnPages_SelectionChanged;
+            }
+
+            //Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
+        }
+
+        private async void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PageContext.SelectPage((int)ddnPages.SelectedValue);
+            //this.DataContext = _viewmodels[PageContext.SelectedPage];
+            //Viewmodel.Reset();
+            Viewmodel.SelectedPage = PageContext.SelectedPage;
+            Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
+            var pageNumber = PageContext.SelectedPage;
+            using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
+            {
+                var img = await Helpers.PDF.PageToBitmapAsync(page);
+                PageContext.Store(pageNumber, img);
+                Viewmodel.OnSetImageSource.Execute(img);
+            }
         }
 
         public void ShowPdfPicker()
         {
             new PdfPicker().ShowDialog();
-            Viewmodel.Reset();
-            Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
+            Viewmodel?.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
 
         }
 
@@ -78,6 +112,7 @@ namespace Lookit
                         }
 
                         var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
+                        view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
                         view.ShowDialog();
                         _clickedPoint = null;
                         return;
