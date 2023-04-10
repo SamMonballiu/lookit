@@ -130,51 +130,6 @@ namespace Lookit
             ScaleContext.Scale = ScaleContext.Scale.UpdateDistance(double.Parse(TxtScaleDistance.Text));
         }
 
-        private void AddRect()
-        {
-            System.Windows.Shapes.Rectangle rect;
-            rect = new System.Windows.Shapes.Rectangle();
-            rect.Stroke = new SolidColorBrush(Colors.Black);
-            rect.Fill = new SolidColorBrush(Colors.Black);
-            rect.Width = 200;
-            rect.Height = 200;
-            Canvas.SetLeft(rect, 0);
-            Canvas.SetTop(rect, 0);
-            //CnvMeasure.Children.Add(rect);
-        }
-
-        private void AddLine(LineMeasurement measurement, SolidColorBrush brush)
-        {
-            var zoomLevel = Viewmodel.ZoomLevel;
-
-            var line = new Line
-            {
-                Stroke = brush,
-                StrokeThickness = Math.Max(1, Math.Round(zoomLevel * 3)),
-                X1 = measurement.Start.X,
-                Y1 = measurement.Start.Y,
-                X2 = measurement.End.X,
-                Y2 = measurement.End.Y,
-                Visibility = Visibility.Visible
-            };
-
-            //CnvMeasure.Children.Add(line);
-        }
-
-        private void AddEllipse(System.Windows.Point point)
-        {
-            var ellipse = new Ellipse
-            {
-                Stroke = new SolidColorBrush(Colors.DarkRed),
-                Fill = new SolidColorBrush(Colors.Red),
-                Width = 20,
-                Height = 20
-            };
-            Canvas.SetLeft(ellipse, point.X - 10);
-            Canvas.SetTop(ellipse, point.Y - 10);
-            //CnvMeasure.Children.Add(ellipse);
-        }
-
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             ShowPdfPicker();
