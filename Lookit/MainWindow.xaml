@@ -147,7 +147,7 @@
                               X2="{Binding Second.X}"
                               Y2="{Binding Second.Y}">
                         </Line>
-                        <Ellipse Height="4" Width="4" Fill="Red" Margin="1 1 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
+                        <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
                     </Canvas>
 
                     <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">

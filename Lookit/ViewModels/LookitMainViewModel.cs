@@ -78,8 +78,8 @@ namespace Lookit.ViewModels
         
         public string TempPointsString => string.Join(",", _tempPoints.Select(p => $"{p.X}, {p.Y}"));
         public Point FirstTempPoint => _tempPoints.Any() 
-            ? new Point(TempPoints.First().X - 3, TempPoints.First().Y - 3) 
-            : new Point(-10, -10);
+            ? new Point(TempPoints.First().X, TempPoints.First().Y) 
+            : new Point(int.MaxValue, int.MaxValue);
 
         [ObservableProperty]
         private BitmapSource _imageSource;
@@ -166,10 +166,16 @@ namespace Lookit.ViewModels
 
         private void RemoveLastPoint()
         {
+            if (Mode != Mode.MeasurePolygon)
+            {
+                return;
+            }
+
             if (_tempPoints.Any())
             {
                 TempPoints.Remove(TempPoints.Last());
                 OnPropertyChanged(nameof(TempPointsString));
+                OnPropertyChanged(nameof(FirstTempPoint));
             }
         }
 
