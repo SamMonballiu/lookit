@@ -4,13 +4,11 @@ using Lookit.Models;
 using Lookit.ViewModels;
 using Lookit.Views;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 
@@ -26,8 +24,6 @@ namespace Lookit
         public static extern bool DeleteObject(IntPtr hObject);
 
         public LookitMainViewModel Viewmodel => (DataContext as LookitMainViewModel);
-
-        //private readonly Dictionary<int, LookitMainViewModel> _viewmodels = new Dictionary<int, LookitMainViewModel>();
 
         private Point? _clickedPoint;
 
@@ -54,27 +50,15 @@ namespace Lookit
             if (PageContext.PDF != null)
             {
                 var pages = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
-                //foreach (var page in pages)
-                //{
-                //   if (!_viewmodels.ContainsKey(page))
-                //    {
-                //        _viewmodels.Add(page, new LookitMainViewModel());
-                //    }
-                //}
-                //this.DataContext = _viewmodels[PageContext.SelectedPage];
                 ddnPages.ItemsSource = pages;
                 ddnPages.SelectedValue = PageContext.SelectedPage;
                 ddnPages.SelectionChanged += DdnPages_SelectionChanged;
             }
-
-            //Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
         }
 
         private async void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             PageContext.SelectPage((int)ddnPages.SelectedValue);
-            //this.DataContext = _viewmodels[PageContext.SelectedPage];
-            //Viewmodel.Reset();
             Viewmodel.SelectedPage = PageContext.SelectedPage;
             Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
             var pageNumber = PageContext.SelectedPage;
@@ -90,7 +74,6 @@ namespace Lookit
         {
             new PdfPicker().ShowDialog();
             Viewmodel?.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
-
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
@@ -192,19 +175,9 @@ namespace Lookit
             //CnvMeasure.Children.Add(ellipse);
         }
 
-        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Loaded");
-        }
-
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             ShowPdfPicker();
-        }
-
-        private void ListMeasurements_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
     }
 }
