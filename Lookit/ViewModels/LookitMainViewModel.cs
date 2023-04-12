@@ -14,6 +14,10 @@ using Clipboard = System.Windows.Clipboard;
 using IDataObject = System.Windows.IDataObject;
 using Point = System.Drawing.Point;
 using Lookit.Extensions;
+using Lookit.Helpers;
+using Windows.Storage;
+using Windows.Data.Pdf;
+using System.Threading.Tasks;
 
 namespace Lookit.ViewModels
 {
@@ -34,8 +38,8 @@ namespace Lookit.ViewModels
         [NotifyPropertyChangedFor(nameof(Scale))]
         protected int _selectedPage = 1;
 
-        private Dictionary<int, ObservableCollection<MeasurementViewModel>> _pagedMeasurements = new();
-        private Dictionary<int, Scale> _pagedScales = new();
+        private readonly Dictionary<int, ObservableCollection<MeasurementViewModel>> _pagedMeasurements = new();
+        private readonly Dictionary<int, Scale> _pagedScales = new();
 
         public Scale Scale
         {
@@ -223,6 +227,64 @@ namespace Lookit.ViewModels
                     measurement.Scale = scale;
                 }
             });
+        }
+
+        public LookitMainViewModel(Dictionary<int, List<PersistableMeasurement>> pagedMeasurements, Dictionary<int, PersistableScale> pagedScales): this()
+        {
+            foreach (var page in pagedScales)
+            {
+                _pagedScales.Add(page.Key, new Scale(page.Value));
+            }
+
+            foreach(var page in pagedMeasurements)
+            {
+                var scale = _pagedScales[page.Key];
+                _pagedMeasurements.Add(page.Key, page.Value.Select(x => x.ToViewmodel(scale)).ToObservableCollection());
+            }
+
+        }
+
+        public static async Task<LookitMainViewModel> FromPersistedSession(PersistableSession session)
+        {
+            var file = await StorageFile.GetFileFromPathAsync(session.PdfPath);
+            PageContext.PDF = await PdfDocument.LoadFromFileAsync(file);
+
+            var pageNumber = session.SelectedPage;
+
+            var viewmodel = new LookitMainViewModel(session.PagedMeasurements, session.PagedScales);
+            using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
+            {
+                var img = await PDF.PageToBitmapAsync(page);
+                PageContext.Store(pageNumber, img);
+                viewmodel.OnSetImageSource.Execute(img);
+            }
+
+            return viewmodel;
+        }
+
+        public PersistableSession GetPersistableSession()
+        {
+            var session = new PersistableSession
+            {
+                PdfPath = PageContext.Filename,
+                SelectedPage = _selectedPage,
+                PagedMeasurements = _pagedMeasurements.OrderBy(x => x.Key).Aggregate(
+                    new Dictionary<int, List<PersistableMeasurement>>(),
+                    (acc, keyValuePair) =>
+                    {
+                        acc.Add(keyValuePair.Key, keyValuePair.Value.Select(x => x.ToPersistableMeasurement()).ToList());
+                        return acc;
+                    }),
+                PagedScales = _pagedScales.OrderBy(x => x.Key).Aggregate(
+                    new Dictionary<int, PersistableScale>(),
+                    (acc, keyValuePair) =>
+                    {
+                        acc.Add(keyValuePair.Key, keyValuePair.Value.ToPersistableScale());
+                        return acc;
+                    })
+            };
+
+            return session;
         }
     }
 }

@@ -85,6 +85,8 @@
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                 <Button Visibility="Collapsed" Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
                 <Button Name="btnOpenFile" Content="Open" Click="btnOpenFile_Click"/>
+                <Button Name="btnLoadFile" Content="Load" Click="btnLoadFile_Click"/>
+                <Button Name="btnSaveFile" Content="Save" Click="btnSaveFile_Click"/>
                 <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
                 <Button Name="BtnMeasure" Click="BtnMeasure_Click">Area</Button>
                 <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">Line</Button>

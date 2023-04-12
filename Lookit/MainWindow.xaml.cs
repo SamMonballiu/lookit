@@ -1,12 +1,15 @@
 ﻿using Lookit.Context;
+using Lookit.Helpers;
 using Lookit.Logic;
 using Lookit.Models;
 using Lookit.ViewModels;
 using Lookit.Views;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -27,14 +30,21 @@ namespace Lookit
 
         private Point? _clickedPoint;
 
+        private readonly OpenFileDialog _loadFileDialog = new()
+        {
+            Filter = "JSON files|*.json"
+        };
+
+        private readonly SaveFileDialog _saveFileDialog = new()
+        {
+            Filter = "JSON files|*.json"
+        };
+
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
-            //ImgMain.Source = new BitmapImage(new Uri(@"Assets/test.GIF", UriKind.RelativeOrAbsolute));
-
-            ShowPdfPicker();
 
             ListMeasurements.SelectionChanged += (s, e) =>
             {
@@ -46,14 +56,6 @@ namespace Lookit
                     //TODO Fix
                 }
             };
-
-            if (PageContext.PDF != null)
-            {
-                var pages = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
-                ddnPages.ItemsSource = pages;
-                ddnPages.SelectedValue = PageContext.SelectedPage;
-                ddnPages.SelectionChanged += DdnPages_SelectionChanged;
-            }
         }
 
         private async void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -74,6 +76,7 @@ namespace Lookit
         {
             new PdfPicker().ShowDialog();
             Viewmodel?.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
+            UpdatePagesDropdown();
         }
 
         private void ZoomPicker_ZoomChanged(object sender, UserControls.ZoomChangedEventArgs e)
@@ -150,6 +153,55 @@ namespace Lookit
             {
                 zoomPicker.ZoomOut();
             }
+        }
+
+        private async void btnLoadFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_loadFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    await LoadPersistedSession(_loadFileDialog.FileName);
+                
+                    UpdatePagesDropdown();
+                }
+            } catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void btnSaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (_saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                PersistToSession(_saveFileDialog.FileName);
+            }
+        }
+
+        private void UpdatePagesDropdown()
+        {
+            if (PageContext.PDF != null)
+            {
+                var pages = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
+                ddnPages.ItemsSource = pages;
+                ddnPages.SelectionChanged += DdnPages_SelectionChanged;
+                ddnPages.SelectedValue = PageContext.SelectedPage;
+            }
+        }
+
+        public async Task LoadPersistedSession(string filename)
+        {
+            var persistedSession = Persist.ReadSession(filename);
+            this.DataContext = await LookitMainViewModel.FromPersistedSession(persistedSession);
+            PageContext.SelectPage(persistedSession.SelectedPage);
+            PageContext.Filename = persistedSession.PdfPath;
+        }
+
+        public void PersistToSession(string filename)
+        {
+            var persistableSession = Viewmodel.GetPersistableSession();
+            Persist.PersistSession(persistableSession, filename);
         }
     }
 }

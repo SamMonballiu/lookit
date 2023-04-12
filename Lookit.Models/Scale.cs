@@ -24,6 +24,14 @@ namespace Lookit.Models
             Unit = unit;
         }
 
+        public Scale(PersistableScale scale)
+        {
+            First = new Point(scale.First.X, scale.First.Y);
+            Second = new Point(scale.Second.X, scale.Second.Y);
+            _enteredDistance = scale.EnteredDistance;
+            Unit = (ScaleUnit)scale.Unit;
+        }
+
         public void SetEnteredDistance(double distance)
         {
             _enteredDistance = distance;

@@ -1,7 +1,9 @@
 ﻿using Lookit.Models;
+using Lookit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Lookit.Extensions
 {
@@ -15,6 +17,17 @@ namespace Lookit.Extensions
                 collection.Add(item);
             }
             return collection;
+        }
+
+        public static Dictionary<int, List<Measurement>> ToPagedList(this Dictionary<int, ObservableCollection<Measurement>> dict)
+        {
+            var result = new Dictionary<int, List<Measurement>>();
+            foreach (var page in dict)
+            {
+                result.Add(page.Key, page.Value.ToList());
+            }
+
+            return result;
         }
 
         public static string ToSquaredString(this ScaleUnit unit)
@@ -36,6 +49,39 @@ namespace Lookit.Extensions
                 ScaleUnit.Meters => "m",
                 ScaleUnit.Centimeters => "cm",
                 _ => throw new NotSupportedException()
+            };
+        }
+
+
+        public static PersistablePoint ToPersistablePoint(this System.Drawing.Point point)
+            => new() { X = point.X, Y = point.Y };
+
+        public static PersistableScale ToPersistableScale(this Scale scale)
+            => new()
+            {
+                First = scale.First.ToPersistablePoint(),
+                Second = scale.Second.ToPersistablePoint(),
+                EnteredDistance = scale.EnteredDistance,
+                Unit = (int)scale.Unit
+            };
+
+        public static PersistableMeasurement ToPersistableMeasurement(this MeasurementViewModel model)
+        {
+            return new PersistableMeasurement()
+            {
+                Points = model.Measurement.Points.Select(x => x.ToPersistablePoint()).ToList(),
+                Name = model.Name,
+            };
+        }
+
+        public static MeasurementViewModel ToViewmodel(this PersistableMeasurement me, Scale scale)
+        {
+            var points = me.Points.Select(pt => new System.Drawing.Point(pt.X, pt.Y)).ToList();
+
+            return points.Count switch
+            {
+                2 => new LineMeasurementViewModel(new LineMeasurement(points[0], points[1]), scale, me.Name),
+                _ => new PolygonMeasurementViewModel(new PolygonalMeasurement(points), scale, me.Name),
             };
         }
     }
