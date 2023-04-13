@@ -118,6 +118,9 @@ namespace Lookit.ViewModels
                 case Mode.MeasureLine:
                     AddLinePoint(point);
                     break;
+                case Mode.MeasureRectangle:
+                    AddRectanglePoint(point);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_mode));
             }
@@ -136,10 +139,41 @@ namespace Lookit.ViewModels
                 Measurements.Add(new LineMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 OnPropertyChanged(nameof(LineMeasurements));
                 TempPoints.Clear();
+                Mode = Mode.None;
                 return;
             }
 
             _tempPoints.Add(point);
+        }
+
+        private void AddRectanglePoint(Point point)
+        {
+            if (!TempPoints.Any())
+            {
+                if (Straighten && !IsControlDown() && TempPoints.Any())
+                {
+                    point = Align(_tempPoints.Last(), point);
+                }
+                TempPoints.Add(point);
+                
+            } else
+            {
+                var firstPoint = TempPoints.First();
+                var points = new List<Point>
+                {
+                    firstPoint,
+                    new Point(firstPoint.X, point.Y),
+                    point,
+                    new Point(point.X, firstPoint.Y),
+                };
+
+                var measurement = new PolygonalMeasurement(points);
+                Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
+                TempPoints.Clear();
+                OnPropertyChanged(nameof(PolygonMeasurements));
+            }
+            OnPropertyChanged(nameof(TempPointsString));
+            OnPropertyChanged(nameof(FirstTempPoint));
         }
 
         private void AddPolygonPoint(Point point)
@@ -170,7 +204,7 @@ namespace Lookit.ViewModels
 
         private void RemoveLastPoint()
         {
-            if (Mode != Mode.MeasurePolygon)
+            if (Mode != Mode.MeasurePolygon && Mode != Mode.MeasureRectangle)
             {
                 return;
             }

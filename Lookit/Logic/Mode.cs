@@ -5,6 +5,7 @@
         None,
         Scale,
         MeasurePolygon,
-        MeasureLine
+        MeasureLine,
+        MeasureRectangle,
     }
 }

@@ -129,6 +129,12 @@ namespace Lookit
             Viewmodel.Mode = Mode.MeasureLine;
         }
 
+
+        private void BtnMeasureRect_Click(object sender, RoutedEventArgs e)
+        {
+            Viewmodel.Mode = Mode.MeasureRectangle;
+        }
+
         private void BtnUpdateScale_Click(object sender, RoutedEventArgs e)
         {
             ScaleContext.Scale = ScaleContext.Scale.UpdateDistance(double.Parse(TxtScaleDistance.Text));
@@ -204,5 +210,6 @@ namespace Lookit
             var persistableSession = Viewmodel.GetPersistableSession();
             Persist.PersistSession(persistableSession, filename);
         }
+
     }
 }
