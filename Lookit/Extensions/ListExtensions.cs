@@ -3,7 +3,11 @@ using Lookit.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace Lookit.Extensions
 {
@@ -83,6 +87,24 @@ namespace Lookit.Extensions
                 2 => new LineMeasurementViewModel(new LineMeasurement(points[0], points[1]), scale, me.Name),
                 _ => new PolygonMeasurementViewModel(new PolygonalMeasurement(points), scale, me.Name),
             };
+        }
+
+        public static BitmapImage ToBitmapImage(this Bitmap bitmap)
+        {
+            using (var memory = new MemoryStream())
+            {
+                bitmap.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+
+                return bitmapImage;
+            }
         }
     }
 }

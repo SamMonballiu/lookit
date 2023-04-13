@@ -247,18 +247,14 @@ namespace Lookit.ViewModels
         public static async Task<LookitMainViewModel> FromPersistedSession(PersistableSession session)
         {
             var file = await StorageFile.GetFileFromPathAsync(session.PdfPath);
+            PageContext.Filename = session.PdfPath;
             PageContext.PDF = await PdfDocument.LoadFromFileAsync(file);
 
             var pageNumber = session.SelectedPage;
-
+            
             var viewmodel = new LookitMainViewModel(session.PagedMeasurements, session.PagedScales);
-            using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
-            {
-                var img = await PDF.PageToBitmapAsync(page);
-                PageContext.Store(pageNumber, img);
-                viewmodel.OnSetImageSource.Execute(img);
-            }
 
+            viewmodel.OnSetImageSource.Execute(PDF.GetImage(pageNumber));
             return viewmodel;
         }
 

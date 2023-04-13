@@ -1,4 +1,5 @@
 ﻿using Lookit.Context;
+using Lookit.Helpers;
 using Lookit.ViewModels;
 using Microsoft.Win32;
 using System;
@@ -40,6 +41,7 @@ namespace Lookit.Views
             {
                 Viewmodel.Filename = openFileDialog.FileName;
                 PageContext.Filename = openFileDialog.FileName;
+
                 var file = await StorageFile.GetFileFromPathAsync(Viewmodel.Filename);
                 PageContext.PDF = await PdfDocument.LoadFromFileAsync(file);
                 Viewmodel.PageCount = Enumerable.Range(1, (int)PageContext.PDF.PageCount).ToList();
@@ -49,7 +51,7 @@ namespace Lookit.Views
             }
         }
 
-        private async void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             var pageNumber = (int)cbxSelectedPage.SelectedValue;
             PageContext.SelectPage(pageNumber);
@@ -60,12 +62,7 @@ namespace Lookit.Views
                 return;
             }
 
-            using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
-            {
-                var img = await Helpers.PDF.PageToBitmapAsync(page);
-                PageContext.Store(pageNumber, img);
-                Viewmodel.OnSetImageSource.Execute(img);
-            }
+            Viewmodel.OnSetImageSource.Execute(PDF.GetImage(pageNumber));
         }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)

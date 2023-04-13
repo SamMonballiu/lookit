@@ -64,12 +64,13 @@ namespace Lookit
             Viewmodel.SelectedPage = PageContext.SelectedPage;
             Viewmodel.OnSetImageSource.Execute(PageContext.Get(PageContext.SelectedPage));
             var pageNumber = PageContext.SelectedPage;
-            using (var page = PageContext.PDF.GetPage((uint)pageNumber - 1))
+            if (PageContext.Has(pageNumber))
             {
-                var img = await Helpers.PDF.PageToBitmapAsync(page);
-                PageContext.Store(pageNumber, img);
-                Viewmodel.OnSetImageSource.Execute(img);
+                Viewmodel.OnSetImageSource.Execute(PageContext.Get(pageNumber));
+                return;
             }
+
+            Viewmodel.OnSetImageSource.Execute(PDF.GetImage(pageNumber));
         }
 
         public void ShowPdfPicker()

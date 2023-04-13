@@ -108,17 +108,21 @@
 
                 </StackPanel>
             </StackPanel>
-            <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#ddd">
-                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#ccc">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="White">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width=".33*" />
                     </Grid.ColumnDefinitions>
                     
-                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White" >
-                        <Image Source="{Binding Path=ImageSource}" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ImgMain" RenderOptions.BitmapScalingMode="HighQuality">
+                    <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White">
+                        <Image Source="{Binding Path=ImageSource}" 
+                               HorizontalAlignment="Left" 
+                               VerticalAlignment="Top"   
+                               Name="ImgMain" 
+                               >
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" />
+                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}"  />
                             </Image.LayoutTransform>
                         </Image>
                     </ContentControl>
