@@ -9,7 +9,13 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\disk.png" />
     <None Remove="Assets\eye.png" />
+    <None Remove="Assets\folder_go.png" />
+    <None Remove="Assets\line.png" />
+    <None Remove="Assets\page_go.png" />
+    <None Remove="Assets\ruler.png" />
+    <None Remove="Assets\shape_handles.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.Linq" />
@@ -21,7 +27,13 @@
     <ProjectReference Include="..\Lookit.Models\Lookit.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Assets\disk.png" />
     <Resource Include="Assets\eye.png" />
+    <Resource Include="Assets\folder_go.png" />
+    <Resource Include="Assets\line.png" />
+    <Resource Include="Assets\page_go.png" />
+    <Resource Include="Assets\ruler.png" />
+    <Resource Include="Assets\shape_handles.png" />
     <Resource Include="Assets\test.GIF" />
   </ItemGroup>
   <ItemGroup>

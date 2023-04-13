@@ -82,25 +82,64 @@
             
         </DockPanel>
         <DockPanel Grid.Column="1" Grid.Row="0">
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Style="{StaticResource Menu}">
                 <Button Visibility="Collapsed" Name="BtnPaste" Command="{Binding Path=OnPasteImage}">Paste</Button>
-                <Button Name="btnOpenFile" Content="Open" Click="btnOpenFile_Click"/>
-                <Button Name="btnLoadFile" Content="Load" Click="btnLoadFile_Click"/>
-                <Button Name="btnSaveFile" Content="Save" Click="btnSaveFile_Click"/>
-                <Button Name="BtnScale" Click="BtnScale_Click">Scale</Button>
-                <Button Name="BtnMeasure" Click="BtnMeasure_Click">Area</Button>
-                <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">Line</Button>
+                <Button Name="btnOpenFile" ToolTip="Open PDF" Click="btnOpenFile_Click" Style="{StaticResource MenuButton}">
+                    <Image Source="/Assets/book_previous.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
+                <Button Name="btnLoadFile" ToolTip="Load" Click="btnLoadFile_Click" Style="{StaticResource MenuButton}">
+                    <Image Source="/Assets/folder_go.png"  Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
+                <Button Name="btnSaveFile" ToolTip="Save" Click="btnSaveFile_Click" Style="{StaticResource MenuButton}">
+                    <Image Source="/Assets/disk.png"  Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
+                <Button Name="BtnScale" Click="BtnScale_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Value="Scale" Binding="{Binding Mode}">
+                                    <Setter Property="Background" Value="LightSteelBlue"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/ruler.png"  Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
+                <Button Name="BtnMeasure" Click="BtnMeasure_Click" ToolTip="Area" Margin="0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Value="MeasurePolygon" Binding="{Binding Mode}">
+                                    <Setter Property="Background" Value="LightSteelBlue"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/shape_handles.png"  Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
+                <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Value="MeasureLine" Binding="{Binding Mode}">
+                                    <Setter Property="Background" Value="LightSteelBlue"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/line.png"  Width="24" Height="24" RenderOptions.BitmapScalingMode="Linear"/>
+                </Button>
                 <StackPanel VerticalAlignment="Center">
                     <CheckBox IsChecked="{Binding Straighten}">
                         Straighten?
                     </CheckBox>
 
                 </StackPanel>
-                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                <StackPanel Margin="12 0 0 0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label>Mode:</Label>
                     <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
-                <StackPanel Margin="12 0 0 0" Orientation="Horizontal">
+                <StackPanel Margin="12 0 0 0" Orientation="Horizontal" Visibility="Collapsed">
                     <Label>Scale distance:</Label>
                     <TextBox Name="TxtScaleDistance" Width="200" IsEnabled="False" Text="{Binding Mode=OneWay, Path=Scale.EnteredDistance}"/>
                     <Button Name="BtnUpdateScale" Click="BtnUpdateScale_Click">Update</Button>
