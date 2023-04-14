@@ -31,10 +31,11 @@ namespace Lookit.UserControls
         public ScalePicker()
         {
             InitializeComponent();
-            this.Loaded += (_, __) =>
-            {
-                txtScale.SelectAll();
-            };
+        }
+
+        private void txtScale_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ((TextBox)sender).Dispatcher.BeginInvoke(() => { txtScale.SelectAll(); });
         }
     }
 }
