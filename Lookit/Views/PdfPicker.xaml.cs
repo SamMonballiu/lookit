@@ -31,9 +31,16 @@ namespace Lookit.Views
                 Viewmodel.Filename = PageContext.Filename;
                 cbxSelectedPage.SelectedValue = PageContext.SelectedPage;
             }
+
+            Loaded += btnOpenFile_Click;
         }
 
-        private async void btnOpenFile_Click(object sender, RoutedEventArgs e)
+        private void PdfPicker_Loaded(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async void OpenFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "PDF files|*.pdf";
@@ -49,6 +56,11 @@ namespace Lookit.Views
                 cbxSelectedPage.SelectedIndex = 0;
                 ComboBox_SelectionChanged(null, null);
             }
+        }
+
+        private void btnOpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog();
         }
 
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
