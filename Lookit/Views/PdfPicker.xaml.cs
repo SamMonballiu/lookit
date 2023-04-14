@@ -75,6 +75,11 @@ namespace Lookit.Views
             }
 
             Viewmodel.OnSetImageSource.Execute(PDF.GetImage(pageNumber));
+
+            if (Viewmodel.PageCount.Count() == 1)
+            {
+                this.Close();
+            }
         }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
