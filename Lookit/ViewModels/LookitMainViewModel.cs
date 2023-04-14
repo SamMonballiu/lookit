@@ -71,7 +71,7 @@ namespace Lookit.ViewModels
         public LineMeasurement LinePreview { 
             get
             {
-                if (_mode != Mode.MeasureLine || !TempPoints.Any())
+                if (_mode is not Mode.Scale && _mode is not Mode.MeasureLine || !TempPoints.Any())
                 {
                     return new LineMeasurement(new Point(-100, -100), new Point(-100, -100));
                 }
@@ -95,6 +95,7 @@ namespace Lookit.ViewModels
         public IEnumerable<LineMeasurementViewModel> LineMeasurements => Measurements.OfType<LineMeasurementViewModel>();
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LinePreview))]
         private ObservableCollection<Point> _tempPoints = new();
         
         public string TempPointsString => string.Join(",", _tempPoints.Select(p => $"{p.X}, {p.Y}"));
@@ -139,8 +140,27 @@ namespace Lookit.ViewModels
                 case Mode.MeasureRectangle:
                     AddRectanglePoint(point);
                     break;
+                case Mode.Scale:
+                    AddScalePoint(point);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_mode));
+            }
+        }
+
+        private void AddScalePoint(Point point)
+        {
+            if (_tempPoints.Any())
+            {
+                if (_straighten && !IsControlDown())
+                {
+                    point = Align(_tempPoints.First(), point);
+                }
+            }
+
+            if (_tempPoints.Count <= 1)
+            {
+                _tempPoints.Add(point);
             }
         }
 
@@ -279,6 +299,7 @@ namespace Lookit.ViewModels
                 {
                     measurement.Scale = scale;
                 }
+                TempPoints = new ObservableCollection<Point>();
             });
             OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
             {

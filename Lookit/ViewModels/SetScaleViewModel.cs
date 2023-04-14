@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Point = System.Drawing.Point;
 
 namespace Lookit.ViewModels
 {
@@ -29,7 +30,7 @@ namespace Lookit.ViewModels
 
         public void UpdateScale()
         {
-            var scale = new Scale(Points.First.ToPoint(), Points.Second.ToPoint(), _scaleDistance, _scaleUnit);
+            var scale = new Scale(Points.First, Points.Second, _scaleDistance, _scaleUnit);
             OnScaleConfirmed?.Invoke(scale);
         }
     }

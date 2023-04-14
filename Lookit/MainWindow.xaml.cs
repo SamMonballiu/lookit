@@ -26,8 +26,6 @@ namespace Lookit
 
         public LookitMainViewModel Viewmodel => (DataContext as LookitMainViewModel);
 
-        private Point? _clickedPoint;
-
         private readonly OpenFileDialog _loadFileDialog = new()
         {
             Filter = "JSON files|*.json"
@@ -88,17 +86,22 @@ namespace Lookit
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
-                    if (Viewmodel.Mode == Mode.Scale || Viewmodel.Mode == Mode.None)
+                    if (Viewmodel.Mode is Mode.None)
                     {
-                        if (_clickedPoint is null)
+                        return;
+                    }
+                    if (Viewmodel.Mode is Mode.Scale)
+                    {
+                        var pos = e.GetPosition(ImgMain);
+
+                        Viewmodel.OnAddPoint.Execute(pos.ToPoint());
+
+                        if (Viewmodel.TempPoints.Count == 2)
                         {
-                            _clickedPoint = e.GetPosition(ImgMain);
-                            return;
+                            var view = new SetScaleView(Viewmodel.LinePreview.Start, Viewmodel.LinePreview.End);
+                            view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
+                            view.ShowDialog();
                         }
-                        var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
-                        view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
-                        view.ShowDialog();
-                        _clickedPoint = null;
                         return;
                     }
 
@@ -211,7 +214,7 @@ namespace Lookit
         private void ScrollViewer_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var pos = e.GetPosition(ImgMain);
-            if (Viewmodel.Mode == Mode.MeasureLine && Viewmodel.TempPoints.Count > 0)
+            if ((Viewmodel.Mode is Mode.MeasureLine or Mode.Scale) && Viewmodel.TempPoints.Count > 0)
             {
                 Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
             }

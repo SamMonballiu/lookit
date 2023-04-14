@@ -15,6 +15,7 @@
         <valueconverters:PointToThicknessConverter x:Key="pointToThicknessConverter" />
         <valueconverters:LineLabelPositionConverter x:Key="lineLabelPositionConverter" />
         <valueconverters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        <valueconverters:LinePreviewStrokeConverter x:Key="linePreviewStrokeConverter" />
     </Window.Resources>
     <DockPanel>
         <Border DockPanel.Dock="Top" BorderBrush="#424b54" BorderThickness="0 0 0 1">
@@ -213,7 +214,9 @@
                             </Line>
                             <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
 
-                            <Line DataContext="{Binding LinePreview}" StrokeThickness="2" Stroke="CornflowerBlue" StrokeDashArray="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                            <Line DataContext="{Binding LinePreview}" StrokeThickness="2" 
+                                  Stroke="{Binding Path=DataContext.Mode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource linePreviewStrokeConverter}}" 
+                                  StrokeDashArray="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
                                 X1="{Binding Start.X}" 
                                 Y1="{Binding Start.Y}"
                                 X2="{Binding End.X}"

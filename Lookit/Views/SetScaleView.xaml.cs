@@ -13,7 +13,7 @@ namespace Lookit.Views
     {
         public event Action<Scale> OnConfirm;
 
-        public SetScaleView(Point first, Point second)
+        public SetScaleView(System.Drawing.Point first, System.Drawing.Point second)
         {
             InitializeComponent();
             DataContext = new SetScaleViewModel();
