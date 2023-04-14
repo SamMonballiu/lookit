@@ -214,14 +214,38 @@
                             </Line>
                             <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
 
-                            <Line DataContext="{Binding LinePreview}" StrokeThickness="2" 
+                            <Line DataContext="{Binding LinePreview}" StrokeThickness="2"
+                                  Name="line"
                                   Stroke="{Binding Path=DataContext.Mode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource linePreviewStrokeConverter}}" 
                                   StrokeDashArray="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
-                                X1="{Binding Start.X}" 
-                                Y1="{Binding Start.Y}"
-                                X2="{Binding End.X}"
-                                Y2="{Binding End.Y}">
+                                X1="{Binding Measurement.Start.X}" 
+                                Y1="{Binding Measurement.Start.Y}"
+                                X2="{Binding Measurement.End.X}"
+                                Y2="{Binding Measurement.End.Y}">
                             </Line>
+
+                            <Label FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=LinePreview.Value}" Width="60" Height="24" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Label.Margin>
+                                    <MultiBinding Converter="{StaticResource lineLabelPositionConverter}">
+                                        <Binding Path="X1" ElementName="line"/>
+                                        <Binding Path="Y1" ElementName="line"/>
+                                        <Binding Path="X2" ElementName="line"/>
+                                        <Binding Path="Y2" ElementName="line"/>
+                                        <Binding Path="Width" RelativeSource="{RelativeSource Mode=Self}" />
+                                        <Binding Path="Height" RelativeSource="{RelativeSource Mode=Self}" />
+                                    </MultiBinding>
+                                </Label.Margin>
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Opacity" Value=".75" />
+                                        <Style.Triggers>
+                                            <DataTrigger Value="Scale" Binding="{Binding Mode}">
+                                                <Setter Property="Opacity" Value="0" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                            </Label>
                         </Canvas>
 
                         <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">

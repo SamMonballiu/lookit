@@ -98,7 +98,8 @@ namespace Lookit
 
                         if (Viewmodel.TempPoints.Count == 2)
                         {
-                            var view = new SetScaleView(Viewmodel.LinePreview.Start, Viewmodel.LinePreview.End);
+                            var measurement = Viewmodel.LinePreview.Measurement as LineMeasurement;
+                            var view = new SetScaleView(measurement.Start, measurement.End);
                             view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
                             view.ShowDialog();
                         }

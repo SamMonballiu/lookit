@@ -68,20 +68,27 @@ namespace Lookit.ViewModels
             }
         }
 
-        public LineMeasurement LinePreview { 
+        public LineMeasurementViewModel LinePreview { 
             get
             {
+                LineMeasurement measurement;
                 if (_mode is not Mode.Scale && _mode is not Mode.MeasureLine || !TempPoints.Any())
                 {
-                    return new LineMeasurement(new Point(-100, -100), new Point(-100, -100));
+                    
+                    measurement = new LineMeasurement(new Point(-100, -100), new Point(-100, -100));
                 }
 
-                if (TempPoints.Count == 1)
+                else if (TempPoints.Count == 1)
                 {
-                    return new LineMeasurement(TempPoints.First(), TempPoints.First());
+                    measurement = new LineMeasurement(TempPoints.First(), TempPoints.First());
                 }
 
-                return new LineMeasurement(TempPoints.First(), TempPoints.Last());
+                else
+                {
+                    measurement = new LineMeasurement(TempPoints.First(), TempPoints.Last());
+                }
+
+                return new LineMeasurementViewModel(measurement, Scale, string.Empty);
             }
         }
 
@@ -243,11 +250,17 @@ namespace Lookit.ViewModels
 
         private void RemoveLastPoint()
         {
-            if (Mode != Mode.MeasurePolygon && Mode != Mode.MeasureRectangle)
+            if (!new[] { Mode.MeasurePolygon, Mode.MeasureRectangle, Mode.MeasureLine, Mode.Scale }.Contains(_mode))
             {
                 return;
             }
 
+            if (_mode is Mode.MeasureLine or Mode.Scale)
+            {
+                _tempPoints = new ObservableCollection<Point>();
+                OnPropertyChanged(nameof(LinePreview));
+            }
+            
             if (_tempPoints.Any())
             {
                 TempPoints.Remove(TempPoints.Last());
