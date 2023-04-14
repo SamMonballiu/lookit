@@ -68,6 +68,23 @@ namespace Lookit.ViewModels
             }
         }
 
+        public LineMeasurement LinePreview { 
+            get
+            {
+                if (_mode != Mode.MeasureLine || !TempPoints.Any())
+                {
+                    return new LineMeasurement(new Point(-100, -100), new Point(-100, -100));
+                }
+
+                if (TempPoints.Count == 1)
+                {
+                    return new LineMeasurement(TempPoints.First(), TempPoints.First());
+                }
+
+                return new LineMeasurement(TempPoints.First(), TempPoints.Last());
+            }
+        }
+
         [ObservableProperty]
         private double _zoomLevel = 1;
 
@@ -102,6 +119,7 @@ namespace Lookit.ViewModels
         public ICommand OnSetImageSource { get; private set; }
         public ICommand OnSwitchMode { get; private set; }
         public ICommand OnSetScale { get; private set; }
+        public ICommand OnUpdateTemporaryPoint { get; private set; }
         
         public static bool IsControlDown()
         {
@@ -137,8 +155,9 @@ namespace Lookit.ViewModels
 
                 var measurement = new LineMeasurement(_tempPoints.First(), point);
                 Measurements.Add(new LineMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
-                OnPropertyChanged(nameof(LineMeasurements));
                 TempPoints.Clear();
+                OnPropertyChanged(nameof(LineMeasurements));
+                OnPropertyChanged(nameof(LinePreview));
                 Mode = Mode.None;
                 return;
             }
@@ -260,6 +279,23 @@ namespace Lookit.ViewModels
                 {
                     measurement.Scale = scale;
                 }
+            });
+            OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
+            {
+                if (_straighten && !IsControlDown())
+                {
+                    point = Align(_tempPoints.First(), point);
+                }
+
+                if (TempPoints.Count == 1)
+                {
+                    TempPoints.Add(point);
+                } else
+                {
+                    TempPoints[^1] = point;
+                }
+                OnPropertyChanged(nameof(TempPoints));
+                OnPropertyChanged(nameof(LinePreview));
             });
         }
 

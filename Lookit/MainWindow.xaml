@@ -165,7 +165,7 @@
             </DockPanel>
             <DockPanel Grid.Column="1" Grid.Row="0">
                 
-                <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#ccc">
+                <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" MouseMove="ScrollViewer_MouseMove" Background="#ccc">
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="White">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -204,6 +204,7 @@
                                 <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
                             </Canvas.LayoutTransform>
 
+                            <!-- SCALE -->
                             <Line DataContext="{Binding Scale}" Stroke="Yellow" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
                                   X1="{Binding First.X}" 
                                   Y1="{Binding First.Y}"
@@ -211,6 +212,13 @@
                                   Y2="{Binding Second.Y}">
                             </Line>
                             <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
+
+                            <Line DataContext="{Binding LinePreview}" StrokeThickness="2" Stroke="CornflowerBlue" StrokeDashArray="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                X1="{Binding Start.X}" 
+                                Y1="{Binding Start.Y}"
+                                X2="{Binding End.X}"
+                                Y2="{Binding End.Y}">
+                            </Line>
                         </Canvas>
 
                         <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">

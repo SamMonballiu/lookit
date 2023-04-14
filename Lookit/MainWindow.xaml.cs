@@ -11,8 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 
 namespace Lookit
@@ -97,7 +95,6 @@ namespace Lookit
                             _clickedPoint = e.GetPosition(ImgMain);
                             return;
                         }
-
                         var view = new SetScaleView(_clickedPoint.Value, e.GetPosition(ImgMain));
                         view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
                         view.ShowDialog();
@@ -211,5 +208,13 @@ namespace Lookit
             Persist.PersistSession(persistableSession, filename);
         }
 
+        private void ScrollViewer_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var pos = e.GetPosition(ImgMain);
+            if (Viewmodel.Mode == Mode.MeasureLine && Viewmodel.TempPoints.Count > 0)
+            {
+                Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
+            }
+        }
     }
 }
