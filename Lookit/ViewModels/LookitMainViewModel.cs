@@ -255,10 +255,11 @@ namespace Lookit.ViewModels
                 return;
             }
 
-            if (_mode is Mode.MeasureLine or Mode.Scale)
+            if (_mode is Mode.MeasureLine or Mode.Scale || _mode is Mode.MeasurePolygon && _tempPoints.Count == 1)
             {
                 _tempPoints = new ObservableCollection<Point>();
                 OnPropertyChanged(nameof(LinePreview));
+                OnPropertyChanged(nameof(FirstTempPoint));
             }
             
             if (_tempPoints.Any())
@@ -330,6 +331,10 @@ namespace Lookit.ViewModels
                 }
                 OnPropertyChanged(nameof(TempPoints));
                 OnPropertyChanged(nameof(LinePreview));
+                if (_mode is Mode.MeasurePolygon)
+                {
+                    OnPropertyChanged(nameof(TempPointsString));
+                }
             });
         }
 

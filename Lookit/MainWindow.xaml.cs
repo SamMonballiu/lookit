@@ -215,7 +215,7 @@ namespace Lookit
         private void ScrollViewer_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var pos = e.GetPosition(ImgMain);
-            if ((Viewmodel.Mode is Mode.MeasureLine or Mode.Scale) && Viewmodel.TempPoints.Count > 0)
+            if ((Viewmodel.Mode is Mode.MeasureLine or Mode.Scale or Mode.MeasurePolygon) && Viewmodel.TempPoints.Count > 0)
             {
                 Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
             }
