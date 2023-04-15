@@ -15,6 +15,11 @@ namespace Lookit.ValueConverters
                 var start = new Point((double)values[0], (double)values[1]);
                 var end = new Point((double)values[2], (double)values[3]);
 
+                if (start is { X: 0, Y: 0} && end is { X: 0, Y: 0})
+                {
+                    return new Thickness(int.MaxValue);
+                }
+
                 var middle = new Point(System.Convert.ToInt32((start.X + end.X) / 2), System.Convert.ToInt32((start.Y + end.Y) / 2));
 
                 var labelWidth = (double)values[4];
@@ -24,7 +29,7 @@ namespace Lookit.ValueConverters
             }
             catch
             {
-                return new Thickness(0);
+                return new Thickness(int.MaxValue);
             }
         }
 

@@ -22,6 +22,7 @@
     </Window.Resources>
     <DockPanel>
         <Border DockPanel.Dock="Top" BorderBrush="#424b54" BorderThickness="0 0 0 1">
+            <!-- MENU BAR -->
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Style="{StaticResource Menu}">
                 <StackPanel.Resources>
                     <Style TargetType="CheckBox">
@@ -161,7 +162,7 @@
                     <Image Source="/Assets/shape_rotate_anticlockwise.png"/>
                 </Button>
 
-                <Button Name="BtnRotateCW" Click="BtnRotate_Click" ToolTip="RotateClockwise">
+                <Button Name="BtnRotateCW" Click="BtnRotate_Click" ToolTip="Rotate clockwise">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
                             <Setter Property="BorderThickness" Value="0 1 1 1"/>
@@ -196,8 +197,6 @@
             </Grid.ColumnDefinitions>
             <DockPanel Grid.Column="0" Grid.Row="0">
                 <ComboBox DockPanel.Dock="Top" x:Name="ddnPages"/>
-                
-
 
                 <ListBox ItemsSource="{Binding Measurements}" x:Name="ListMeasurements">
                     <ListBox.ItemTemplate>
@@ -309,8 +308,28 @@
                                   Y1="{Binding First.Y}"
                                   X2="{Binding Second.X}"
                                   Y2="{Binding Second.Y}">
+                                <Line.Style>
+                                    <Style TargetType="Line">
+                                        <Style.Triggers>
+                                            <DataTrigger Value="None" Binding="{Binding Mode}">
+                                                <Setter Property="Opacity" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Line.Style>
                             </Line>
-                            <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding PolygonPreview.Origin.X}" Canvas.Top="{Binding PolygonPreview.Origin.Y}"/>
+                            
+                            <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding PolygonPreview.Origin.X}" Canvas.Top="{Binding PolygonPreview.Origin.Y}">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Style.Triggers>
+                                            <DataTrigger Value="None" Binding="{Binding Mode}">
+                                                <Setter Property="Opacity" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
 
                             <Line DataContext="{Binding LinePreview}" StrokeThickness="3"
                                   Name="line"

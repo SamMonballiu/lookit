@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows.Markup;
 
 namespace Lookit.Extensions
@@ -6,6 +8,7 @@ namespace Lookit.Extensions
     //https://brianlagunas.com/a-better-way-to-data-bind-enums-in-wpf/
     internal class EnumBindingSourceExtension : MarkupExtension
     {
+
         private Type? _enumType;
         public Type? EnumType
         {
