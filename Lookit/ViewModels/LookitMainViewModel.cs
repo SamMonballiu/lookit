@@ -21,6 +21,20 @@ using System.Threading.Tasks;
 
 namespace Lookit.ViewModels
 {
+    public enum Rotation
+    {
+        Zero = 0,
+        Ninety = 90,
+        OneEighty = 180,
+        TwoSeventy = 270
+    }
+
+    public enum Direction
+    {
+        Clockwise,
+        CounterClockwise
+    }
+
     public partial class LookitMainViewModel : ObservableObject
     {
         public void Reset()
@@ -30,6 +44,9 @@ namespace Lookit.ViewModels
             ScaleContext.Scale = Scale.Default;
             _mode = Mode.MeasurePolygon;
         }
+
+        [ObservableProperty]
+        private int _pageRotation = (int)Rotation.Zero;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
@@ -145,6 +162,7 @@ namespace Lookit.ViewModels
         public ICommand OnUpdateTemporaryPoint { get; private set; }
         public ICommand OnCancelMeasurement { get; private set; }
         public ICommand OnFinalizePreview { get; private set; }
+        public ICommand OnRotate { get; private set; }
         
         public static bool IsControlDown()
         {
@@ -313,6 +331,33 @@ namespace Lookit.ViewModels
             TempPoints = new ObservableCollection<Point>();
         }
 
+        private void Rotate(Direction direction)
+        {
+            var newRotation = direction switch
+            {
+                Direction.Clockwise => PageRotation switch
+                {
+                    0 => 90,
+                    90 => 180,
+                    180 => 270,
+                    270 => 0,
+                    _ => throw new NotImplementedException(),
+                },
+                Direction.CounterClockwise => PageRotation switch
+                {
+                    0 => 270,
+                    90 => 0,
+                    180 => 90,
+                    270 => 180,
+                    _ => throw new NotImplementedException(),
+                },
+                _ => throw new NotImplementedException()
+            };
+
+            PageRotation = newRotation;
+            OnPropertyChanged(nameof(PageRotation));
+        }
+
         public LookitMainViewModel()
         {
             OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
@@ -404,6 +449,10 @@ namespace Lookit.ViewModels
                     OnPropertyChanged(nameof(PolygonMeasurements));
                     OnPropertyChanged(nameof(PolygonPreview));
                 }
+            });
+            OnRotate = new RelayCommand<Direction>(direction =>
+            {
+                Rotate(direction);
             });
 
         }

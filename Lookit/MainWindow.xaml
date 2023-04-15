@@ -17,6 +17,8 @@
         <valueconverters:LineLabelPositionConverter x:Key="lineLabelPositionConverter" />
         <valueconverters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
         <valueconverters:LinePreviewStrokeConverter x:Key="linePreviewStrokeConverter" />
+        <valueconverters:ElementCenterConverter x:Key="elementCenterConverter" />
+        <valueconverters:LabelRotationConverter x:Key="rotationConverter" />
     </Window.Resources>
     <DockPanel>
         <Border DockPanel.Dock="Top" BorderBrush="#424b54" BorderThickness="0 0 0 1">
@@ -109,7 +111,7 @@
                         </Image.Style>
                     </Image>
                 </Button>
-                <Button Name="BtnMeasure" Click="BtnMeasure_Click" ToolTip="Area" Margin="0">
+                <Button Name="BtnMeasure" Click="BtnMeasure_Click" ToolTip="Polygon" Margin="0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
                             <Setter Property="BorderThickness" Value="1 1 0 1"/>
@@ -122,7 +124,7 @@
                     </Button.Style>
                     <Image Source="/Assets/poly_add.png" />
                 </Button>
-                <Button Name="BtnMeasureRect" Click="BtnMeasureRect_Click" ToolTip="Rect" Margin="0">
+                <Button Name="BtnMeasureRect" Click="BtnMeasureRect_Click" ToolTip="Rectangle" Margin="0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
                             <Setter Property="BorderThickness" Value="0 1 0 1"/>
@@ -135,7 +137,7 @@
                     </Button.Style>
                     <Image Source="/Assets/shape_square_add.png" />
                 </Button>
-                <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">
+                <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click" ToolTip="Line">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
                             <Setter Property="BorderThickness" Value="0 1 0 1"/>
@@ -148,9 +150,29 @@
                     </Button.Style>
                     <Image Source="/Assets/line.png"/>
                 </Button>
-                <StackPanel VerticalAlignment="Center">
+
+                <Button Name="BtnRotateCCW" Click="BtnRotate_Click" ToolTip="Rotate counterclockwise">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Margin" Value="0 0 0 0"/>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/shape_rotate_anticlockwise.png"/>
+                </Button>
+
+                <Button Name="BtnRotateCW" Click="BtnRotate_Click" ToolTip="RotateClockwise">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="0 1 1 1"/>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/shape_rotate_clockwise.png"/>
+                </Button>
+
+                <StackPanel VerticalAlignment="Center" Margin="0 0 12 0">
                     <CheckBox IsChecked="{Binding Straighten}">
-                        Straighten
+                        Auto-align points
                     </CheckBox>
 
                 </StackPanel>
@@ -174,6 +196,7 @@
             </Grid.ColumnDefinitions>
             <DockPanel Grid.Column="0" Grid.Row="0">
                 <ComboBox DockPanel.Dock="Top" x:Name="ddnPages"/>
+                
 
 
                 <ListBox ItemsSource="{Binding Measurements}" x:Name="ListMeasurements">
@@ -237,22 +260,27 @@
             <DockPanel Grid.Column="1" Grid.Row="0">
                 
                 <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" MouseMove="ScrollViewer_MouseMove" Background="#ccc">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="White">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="#ccc">
+                        <Grid.LayoutTransform>
+                            <RotateTransform Angle="{Binding PageRotation}" 
+                                CenterX="{Binding ElementName=ImgMain, Path=ActualWidth, Converter={StaticResource elementCenterConverter}}" 
+                                CenterY="{Binding ElementName=ImgMain, Path=ActualHeight, Converter={StaticResource elementCenterConverter}}" 
+                            />
+                        </Grid.LayoutTransform>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width=".33*" />
                         </Grid.ColumnDefinitions>
-                        
-                        <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl" Grid.RowSpan="3" Background="White">
-                            <Image Source="{Binding Path=ImageSource}" 
-                                   HorizontalAlignment="Left" 
-                                   VerticalAlignment="Top"   
-                                   Name="ImgMain" 
-                                   >
-                                <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}"  />
-                                </Image.LayoutTransform>
-                            </Image>
+
+                        <ContentControl Grid.Row="0" Grid.Column="0" Name="ImgControl">
+                            <ContentControl.LayoutTransform>
+                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}"  />
+                            </ContentControl.LayoutTransform>
+                            <StackPanel Background="White">
+                                <Image Source="{Binding Path=ImageSource}" 
+                                       HorizontalAlignment="Left" 
+                                       VerticalAlignment="Top"   
+                                       Name="ImgMain" />
+                            </StackPanel>
                         </ContentControl>
 
                         <Polygon Grid.Row="0" Grid.Column="0" 
@@ -295,6 +323,12 @@
                             </Line>
 
                             <Label FontSize="18" FontWeight="Bold" Background="#ddd" Content="{Binding PolygonPreview.Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Label.LayoutTransform>
+                                    <RotateTransform Angle="{Binding Path=DataContext.PageRotation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource rotationConverter}}" 
+                                                    CenterX="{Binding ElementName=label, Path=DesiredSize.Width, Converter={StaticResource elementCenterConverter}}" 
+                                                    CenterY="{Binding ElementName=label, Path=DesiredSize.Height, Converter={StaticResource elementCenterConverter}}" 
+                                                />
+                                </Label.LayoutTransform>
                                 <Label.Margin>
                                     <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
                                         <Binding Path="DataContext.PolygonPreview.Center" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}"/>
@@ -305,6 +339,12 @@
                             </Label>
 
                             <Label FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=LinePreview.Value}" Width="60" Height="24" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Label.LayoutTransform>
+                                    <RotateTransform Angle="{Binding Path=DataContext.PageRotation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource rotationConverter}}" 
+                                                    CenterX="{Binding ElementName=label, Path=DesiredSize.Width, Converter={StaticResource elementCenterConverter}}" 
+                                                    CenterY="{Binding ElementName=label, Path=DesiredSize.Height, Converter={StaticResource elementCenterConverter}}" 
+                                                />
+                                </Label.LayoutTransform>
                                 <Label.Margin>
                                     <MultiBinding Converter="{StaticResource lineLabelPositionConverter}">
                                         <Binding Path="X1" ElementName="line"/>
@@ -359,13 +399,19 @@
                                                 </MultiBinding>
                                             </Polygon.Fill>
                                         </Polygon>
-                                        <Label FontSize="18" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                        <Label FontSize="18" Name="label" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                            <Label.LayoutTransform>
+                                                <RotateTransform Angle="{Binding Path=DataContext.PageRotation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource rotationConverter}}" 
+                                                    CenterX="{Binding ElementName=label, Path=DesiredSize.Width, Converter={StaticResource elementCenterConverter}}" 
+                                                    CenterY="{Binding ElementName=label, Path=DesiredSize.Height, Converter={StaticResource elementCenterConverter}}" 
+                                                />
+                                            </Label.LayoutTransform>
                                             <Label.Margin>
-                                                
                                                 <MultiBinding Converter="{StaticResource pointToThicknessConverter}">
                                                     <Binding Path="Center"/>
                                                     <Binding Path="Width" RelativeSource="{RelativeSource Mode=Self}" />
                                                     <Binding Path="Height" RelativeSource="{RelativeSource Mode=Self}" />
+                                                    <Binding Path="DataContext.PageRotation" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
                                                 </MultiBinding>
                                             </Label.Margin>
                                         </Label>
@@ -406,8 +452,13 @@
                                             </Line.Stroke>
                                         </Line>
 
-                                        <Label FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="60" Height="24" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                            
+                                        <Label Name="label" FontSize="13" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="60" Height="24" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                            <Label.LayoutTransform>
+                                                <RotateTransform Angle="{Binding Path=DataContext.PageRotation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource rotationConverter}}" 
+                                                    CenterX="{Binding ElementName=label, Path=Height, Converter={StaticResource elementCenterConverter}}" 
+                                                    CenterY="{Binding ElementName=label, Path=Width, Converter={StaticResource elementCenterConverter}}" 
+                                                />          
+                                            </Label.LayoutTransform>
                                             <Label.Margin>
                                                 <MultiBinding Converter="{StaticResource lineLabelPositionConverter}">
                                                     <Binding Path="X1" ElementName="line"/>

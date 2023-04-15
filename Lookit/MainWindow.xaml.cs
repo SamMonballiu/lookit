@@ -297,5 +297,10 @@ namespace Lookit
             var action = _keyboardBindings.GetBinding(e.Key);
             action?.Invoke();
         }
+
+        private void BtnRotate_Click(object sender, RoutedEventArgs e)
+        {
+            Viewmodel.OnRotate.Execute(sender == BtnRotateCCW ? Direction.CounterClockwise : Direction.Clockwise);
+        }
     }
 }
