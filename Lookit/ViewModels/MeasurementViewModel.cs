@@ -45,7 +45,7 @@ namespace Lookit.ViewModels
             ? "-"
             : $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0):F} {Scale.Unit.ToSquaredString()}";
 
-        public string Perimeter => $"{GetPerimeter():F}  {Scale.Unit.ToUnitString()}";
+        public string Perimeter => _scale.IsDefault ? "-" : $"{GetPerimeter():F} {Scale.Unit.ToUnitString()}";
 
         public override string Summary => $"{Value} / {Perimeter}";
 
