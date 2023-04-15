@@ -44,6 +44,7 @@
                 <Button Name="BtnScale" Click="BtnScale_Click">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="1 1 0 1"/>
                             <Style.Triggers>
                                 <DataTrigger Value="Scale" Binding="{Binding Mode}">
                                     <Setter Property="Background" Value="LightSteelBlue"/>
@@ -53,9 +54,36 @@
                     </Button.Style>
                     <Image Source="/Assets/ruler.png" />
                 </Button>
+                <Button Name="BtnDeleteScale" Click="BtnDeleteScale_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            
+                            <Setter Property="BorderThickness" Value="0 1 0 1"/>
+                            <Setter Property="Margin" Value="-8 0 8 0"/>
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Scale.IsDefault}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/ruler-remove.png">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                
+                                <Style.Triggers>
+                                    <DataTrigger Value="True" Binding="{Binding Scale.IsDefault}">
+                                        <Setter Property="Opacity" Value=".5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
                 <Button Name="BtnMeasure" Click="BtnMeasure_Click" ToolTip="Area" Margin="0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="1 1 0 1"/>
                             <Style.Triggers>
                                 <DataTrigger Value="MeasurePolygon" Binding="{Binding Mode}">
                                     <Setter Property="Background" Value="LightSteelBlue"/>
@@ -65,12 +93,22 @@
                     </Button.Style>
                     <Image Source="/Assets/shape_handles.png" />
                 </Button>
-                <Button Name="BtnMeasureRect" Click="BtnMeasureRect_Click" ToolTip="Rect" Margin="0" Style="{StaticResource MenuButton}">
-                    Rect
+                <Button Name="BtnMeasureRect" Content="[RCT]"  Click="BtnMeasureRect_Click" ToolTip="Rect" Margin="0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="0 1 0 1"/>
+                            <Style.Triggers>
+                                <DataTrigger Value="MeasureRectangle" Binding="{Binding Mode}">
+                                    <Setter Property="Background" Value="LightSteelBlue"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
                 <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Setter Property="BorderThickness" Value="0 1 0 1"/>
                             <Style.Triggers>
                                 <DataTrigger Value="MeasureLine" Binding="{Binding Mode}">
                                     <Setter Property="Background" Value="LightSteelBlue"/>

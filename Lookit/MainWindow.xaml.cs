@@ -220,5 +220,10 @@ namespace Lookit
                 Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
             }
         }
+
+        private void BtnDeleteScale_Click(object sender, RoutedEventArgs e)
+        {
+            Viewmodel.OnRemoveScale.Execute(null);
+        }
     }
 }

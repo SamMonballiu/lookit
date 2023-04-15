@@ -141,6 +141,7 @@ namespace Lookit.ViewModels
         public ICommand OnSetImageSource { get; private set; }
         public ICommand OnSwitchMode { get; private set; }
         public ICommand OnSetScale { get; private set; }
+        public ICommand OnRemoveScale { get; private set; }
         public ICommand OnUpdateTemporaryPoint { get; private set; }
         
         public static bool IsControlDown()
@@ -296,6 +297,18 @@ namespace Lookit.ViewModels
             }
         }
 
+        private void SetScale(Scale? scale)
+        {
+            scale ??= Scale.Default;
+            Scale = scale;
+            OnPropertyChanged(nameof(Scale));
+            foreach (var measurement in _pagedMeasurements[_selectedPage])
+            {
+                measurement.Scale = scale;
+            }
+            TempPoints = new ObservableCollection<Point>();
+        }
+
         public LookitMainViewModel()
         {
             OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
@@ -316,16 +329,8 @@ namespace Lookit.ViewModels
                 measurement.Hidden = !measurement.Hidden;
             });
             OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
-            OnSetScale = new RelayCommand<Scale>(scale =>
-            {
-                Scale = scale;
-                OnPropertyChanged(nameof(Scale));
-                foreach (var measurement in _pagedMeasurements[_selectedPage])
-                {
-                    measurement.Scale = scale;
-                }
-                TempPoints = new ObservableCollection<Point>();
-            });
+            OnSetScale = new RelayCommand<Scale>(SetScale);
+            OnRemoveScale = new RelayCommand(() => SetScale(null));
             OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
             {
                 if (_straighten && !IsControlDown())
