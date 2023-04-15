@@ -244,10 +244,12 @@ namespace Lookit.ViewModels
                 {
                     point = Align(_tempPoints.Last(), point);
                 }
+                
                 TempPoints.Add(point);
+
             } else if (point.IsClose(TempPoints.ElementAt(0)))
             {
-                var measurement = new PolygonalMeasurement(TempPoints.ToList());
+                var measurement = new PolygonalMeasurement(TempPoints.SkipLast(1).ToList());
                 Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 TempPoints.Clear();
                 OnPropertyChanged(nameof(PolygonMeasurements));

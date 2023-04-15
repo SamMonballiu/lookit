@@ -220,7 +220,7 @@
                                             </Image>
                                         </Button>
                                     </StackPanel>
-                                    <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Text="{Binding Value}" FontWeight="Bold"/>
+                                    <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Text="{Binding Summary}" FontWeight="Bold"/>
                                 </StackPanel>
                                 
                             </Grid>

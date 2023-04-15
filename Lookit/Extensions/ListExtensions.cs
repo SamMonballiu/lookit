@@ -34,6 +34,17 @@ namespace Lookit.Extensions
             return result;
         }
 
+        public static string ToUnitString(this ScaleUnit unit)
+        {
+            return unit switch
+            {
+                ScaleUnit.None => string.Empty,
+                ScaleUnit.Centimeters => "cm",
+                ScaleUnit.Meters => "m",
+                _ => throw new NotImplementedException(),
+            };
+        }
+
         public static string ToSquaredString(this ScaleUnit unit)
         {
             return unit switch

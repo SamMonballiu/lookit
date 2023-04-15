@@ -10,8 +10,9 @@ namespace Lookit.ViewModels
     public abstract partial class MeasurementViewModel : ObservableObject
     {
         public abstract string Value { get; }
+        public abstract string Summary { get; }
 
-        [ObservableProperty, NotifyPropertyChangedFor(nameof(Value))]
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(Value)), NotifyPropertyChangedFor(nameof(Summary))]
         protected Scale _scale;
 
         [ObservableProperty]
@@ -44,6 +45,11 @@ namespace Lookit.ViewModels
             ? "-"
             : $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0):F} {Scale.Unit.ToSquaredString()}";
 
+        public string Perimeter => $"{GetPerimeter():F}  {Scale.Unit.ToUnitString()}";
+
+        public override string Summary => $"{Value} / {Perimeter}";
+
+
         private System.Windows.Point GetCenter()
         {
             if (!Measurement.Points.Any())
@@ -65,6 +71,25 @@ namespace Lookit.ViewModels
             return new System.Windows.Point(centerX, centerY);
         }
 
+        private double GetPerimeter()
+        {
+            double result = 0;
+            for (int i = 0; i <= Measurement.Points.Count - 1; i++)
+            {
+                var current = Measurement.Points[i];
+                var nextIndex = current == Measurement.Points.Last()
+                    ? 0
+                    : i + 1;
+                var next = Measurement.Points[nextIndex];
+                var line = new LineMeasurement(current, next);
+                var distance = line.GetScaledDistance(Scale) ?? 0;
+                System.Diagnostics.Debug.WriteLine($"{result} + {distance} = {result+distance}");
+                result += distance;
+            }
+
+            return result;
+        }
+
         public PolygonMeasurementViewModel(Measurement measurement, Scale scale, string name) : base(measurement, scale, name) { }
 
         public System.Drawing.Point Origin => Measurement.Points.Any() ? Measurement.Points.First() : System.Drawing.Point.Empty;
@@ -75,6 +100,8 @@ namespace Lookit.ViewModels
         public override string Value => _scale.IsDefault 
             ? "-"
             : $"{(Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0:F} {Scale.Unit.ToShortString()}";
+
+        public override string Summary => Value;
 
         public LineMeasurementViewModel(LineMeasurement measurement, Scale scale, string name)
             : base(measurement, scale, name) { }
