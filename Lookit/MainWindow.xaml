@@ -9,6 +9,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:LookitMainViewModel}"
         mc:Ignorable="d"
         WindowState="Maximized"
+        KeyUp="Window_KeyUp"
         Title="MainWindow" Height="800" Width="800">
     <Window.Resources>
         <valueconverters:MeasurementToColorBrushConverter x:Key="measurementColorConverter" />

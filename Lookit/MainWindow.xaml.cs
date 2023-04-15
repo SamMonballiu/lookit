@@ -36,11 +36,14 @@ namespace Lookit
             Filter = "JSON files|*.json"
         };
 
+        private readonly KeyMap _keyboardBindings = new();
+
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
+            ContentRendered += MainWindow_ContentRendered;
 
             ListMeasurements.SelectionChanged += (s, e) =>
             {
@@ -52,6 +55,51 @@ namespace Lookit
                     //TODO Fix
                 }
             };
+        }
+
+        private void MainWindow_ContentRendered(object sender, EventArgs e)
+        {
+            RegisterKeyBindings();
+        }
+
+        private void RegisterKeyBindings()
+        {
+            _keyboardBindings.Bind(Key.NumPad0)
+                .To(() => TrySwitch(Mode.None));
+
+            _keyboardBindings.Bind(Key.P, Key.NumPad1)
+                .To(() => TrySwitch(Mode.MeasurePolygon));
+
+            _keyboardBindings.Bind(Key.R, Key.NumPad2)
+                .To(() => TrySwitch(Mode.MeasureRectangle));
+
+            _keyboardBindings.Bind(Key.L, Key.NumPad3)
+                .To(() => TrySwitch(Mode.MeasureLine));
+
+            _keyboardBindings.Bind(Key.S)
+                .To(() => TrySwitch(Mode.Scale));
+
+            _keyboardBindings.Bind(Key.Escape)
+                .To(() => Viewmodel.OnCancelMeasurement.Execute(null));
+
+            _keyboardBindings.Bind(Key.Enter, Key.Return)
+                .To(() =>
+            {
+                if (Viewmodel.TempPoints.Any() && Viewmodel.Mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
+                {
+                    Viewmodel.OnFinalizePreview.Execute(null);
+                }
+            });
+        }
+
+        private void TrySwitch(Mode mode)
+        {
+            if (Viewmodel.TempPoints.Any())
+            {
+                return;
+            }
+
+            Viewmodel.Mode = mode;
         }
 
         private async void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -242,6 +290,12 @@ namespace Lookit
             var view = new SetScaleView(scale);
             view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
             view.ShowDialog();
+        }
+
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var action = _keyboardBindings.GetBinding(e.Key);
+            action?.Invoke();
         }
     }
 }

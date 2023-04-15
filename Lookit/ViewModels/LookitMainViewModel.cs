@@ -143,6 +143,8 @@ namespace Lookit.ViewModels
         public ICommand OnSetScale { get; private set; }
         public ICommand OnRemoveScale { get; private set; }
         public ICommand OnUpdateTemporaryPoint { get; private set; }
+        public ICommand OnCancelMeasurement { get; private set; }
+        public ICommand OnFinalizePreview { get; private set; }
         
         public static bool IsControlDown()
         {
@@ -299,7 +301,7 @@ namespace Lookit.ViewModels
             }
         }
 
-        private void SetScale(Scale? scale)
+        private void SetScale(Scale scale)
         {
             scale ??= Scale.Default;
             Scale = scale;
@@ -369,6 +371,36 @@ namespace Lookit.ViewModels
                     OnPropertyChanged(nameof(PolygonPreview));
                 }
             });
+            OnCancelMeasurement = new RelayCommand(() =>
+            {
+                if (_mode is Mode.None || !TempPoints.Any())
+                {
+                    return;
+                }
+
+                TempPoints.Clear();
+                OnPropertyChanged(nameof(LinePreview));
+                OnPropertyChanged(nameof(PolygonPreview));
+                Mode = Mode.None;
+            });
+            OnFinalizePreview = new RelayCommand(() =>
+            {
+                if (Mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
+                {
+                    var points = Mode switch
+                    {
+                        Mode.MeasurePolygon => TempPoints.SkipLast(1).ToList(),
+                        _ => TempPoints.ToList()
+                    };
+
+                    var measurement = new PolygonalMeasurement(points);
+                    Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count + 1}"));
+                    TempPoints.Clear();
+                    OnPropertyChanged(nameof(PolygonMeasurements));
+                    OnPropertyChanged(nameof(PolygonPreview));
+                }
+            });
+
         }
 
         public LookitMainViewModel(Dictionary<int, List<PersistableMeasurement>> pagedMeasurements, Dictionary<int, PersistableScale> pagedScales): this()
