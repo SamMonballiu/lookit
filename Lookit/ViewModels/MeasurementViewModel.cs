@@ -20,8 +20,6 @@ namespace Lookit.ViewModels
         [ObservableProperty]
         protected bool _hidden;
 
-        
-
         public Measurement Measurement { get; }
 
         public MeasurementViewModel(Measurement measurement, Scale scale, string name)
@@ -61,6 +59,8 @@ namespace Lookit.ViewModels
         }
 
         public PolygonMeasurementViewModel(Measurement measurement, Scale scale, string name) : base(measurement, scale, name) { }
+
+        public System.Drawing.Point Origin => Measurement.Points.Any() ? Measurement.Points.First() : System.Drawing.Point.Empty;
     }
 
     public partial class LineMeasurementViewModel : MeasurementViewModel

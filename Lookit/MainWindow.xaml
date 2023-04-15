@@ -186,7 +186,7 @@
                         </ContentControl>
 
                         <Polygon Grid.Row="0" Grid.Column="0" 
-                                 Points="{Binding Path=TempPointsString}" 
+                                 Points="{Binding Path=PolygonPreview.Points}" 
                                  Stroke="CornflowerBlue"
                                  StrokeDashArray="3"
                                  StrokeDashCap="Round"
@@ -212,7 +212,7 @@
                                   X2="{Binding Second.X}"
                                   Y2="{Binding Second.Y}">
                             </Line>
-                            <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding FirstTempPoint.X}" Canvas.Top="{Binding FirstTempPoint.Y}"/>
+                            <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding PolygonPreview.Origin.X}" Canvas.Top="{Binding PolygonPreview.Origin.Y}"/>
 
                             <Line DataContext="{Binding LinePreview}" StrokeThickness="3"
                                   Name="line"
