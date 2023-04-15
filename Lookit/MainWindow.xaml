@@ -153,11 +153,11 @@
                     </CheckBox>
 
                 </StackPanel>
+                <usercontrols:ZoomPicker x:Name="zoomPicker"/>
                 <StackPanel Margin="12 0 0 0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label>Mode:</Label>
                     <Label Name="LblMode" Content="{Binding Path=Mode, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
-                <usercontrols:ZoomPicker x:Name="zoomPicker"/>
                 <StackPanel Margin="12 0 0 0" Orientation="Horizontal" Visibility="Collapsed">
                     <Label>Scale distance:</Label>
                     <TextBox Name="TxtScaleDistance" Width="200" IsEnabled="False" Text="{Binding Mode=OneWay, Path=Scale.EnteredDistance}"/>
