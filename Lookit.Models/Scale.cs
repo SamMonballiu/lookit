@@ -39,6 +39,8 @@ namespace Lookit.Models
 
         public static Scale Default => new Scale(Point.Empty, Point.Empty, 0, ScaleUnit.None);
 
+        public bool IsDefault => First.IsEmpty && Second.IsEmpty && _enteredDistance == 0;
+
         public Scale UpdateDistance(double distance)
         {
             return new Scale(First, Second, distance, Unit);

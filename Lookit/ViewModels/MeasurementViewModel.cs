@@ -40,10 +40,17 @@ namespace Lookit.ViewModels
         public string Points => string.Join(",", Measurement.Points.Select(p => $"{p.X}, {p.Y}"));
         public System.Windows.Point Center => GetCenter();
 
-        public override string Value => $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0):F} {Scale.Unit.ToSquaredString()}";
+        public override string Value => _scale.IsDefault
+            ? "-"
+            : $"{Math.Abs((Measurement as PolygonalMeasurement).GetScaledArea(_scale) ?? 0):F} {Scale.Unit.ToSquaredString()}";
 
         private System.Windows.Point GetCenter()
         {
+            if (!Measurement.Points.Any())
+            {
+                return new System.Windows.Point(int.MaxValue, int.MaxValue);
+            }
+
             var byX = Measurement.Points.OrderBy(pt => pt.X);
             var byY = Measurement.Points.OrderBy(pt => pt.Y);
 
@@ -65,7 +72,9 @@ namespace Lookit.ViewModels
 
     public partial class LineMeasurementViewModel : MeasurementViewModel
     {
-        public override string Value => $"{(Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0:F} {Scale.Unit.ToShortString()}";
+        public override string Value => _scale.IsDefault 
+            ? "-"
+            : $"{(Measurement as LineMeasurement).GetScaledDistance(_scale) ?? 0:F} {Scale.Unit.ToShortString()}";
 
         public LineMeasurementViewModel(LineMeasurement measurement, Scale scale, string name)
             : base(measurement, scale, name) { }
