@@ -17,6 +17,13 @@ namespace Lookit.Logic
             return (Math.Abs(point.X - other.X) < tolerance) && (Math.Abs(point.Y - other.Y) < tolerance);
         }
 
+        public static bool SharesAxisWith(this System.Drawing.Point point, System.Drawing.Point other)
+        {
+            var tolerance = 5;
+
+            return (Math.Abs(point.X - other.X) < tolerance) || (Math.Abs(point.Y - other.Y) < tolerance);
+        }
+
         public static System.Drawing.Point Align(this System.Drawing.Point point, System.Drawing.Point other, int tolerance)
         {
             var horizontalDifference = Math.Abs(point.X - other.X);
