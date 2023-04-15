@@ -19,6 +19,7 @@
     <None Remove="Assets\ruler-remove.png" />
     <None Remove="Assets\ruler.png" />
     <None Remove="Assets\shape_rotate_anticlockwise.png" />
+    <None Remove="Assets\shape_rotate_clockwise.png" />
     <None Remove="Assets\shape_square_add.png" />
     <None Remove="Assets\wrench.png" />
   </ItemGroup>
@@ -41,6 +42,7 @@
     <Resource Include="Assets\ruler-remove.png" />
     <Resource Include="Assets\ruler.png" />
     <Resource Include="Assets\shape_rotate_anticlockwise.png" />
+    <Resource Include="Assets\shape_rotate_clockwise.png" />
     <Resource Include="Assets\shape_square_add.png" />
     <Resource Include="Assets\test.GIF" />
   </ItemGroup>
