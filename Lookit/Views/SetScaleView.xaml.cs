@@ -1,5 +1,4 @@
-﻿using Lookit.Context;
-using Lookit.Models;
+﻿using Lookit.Models;
 using Lookit.ViewModels;
 using System;
 using System.Windows;
@@ -13,16 +12,29 @@ namespace Lookit.Views
     {
         public event Action<Scale> OnConfirm;
 
-        public SetScaleView(System.Drawing.Point first, System.Drawing.Point second)
+        public SetScaleViewModel Viewmodel => DataContext as SetScaleViewModel;
+
+        public SetScaleView()
         {
             InitializeComponent();
             DataContext = new SetScaleViewModel();
-            (DataContext as SetScaleViewModel).Points = (first, second);
-            (DataContext as SetScaleViewModel).OnScaleConfirmed += (Scale scale) =>
+            Viewmodel.OnScaleConfirmed += (Scale scale) =>
             {
                 OnConfirm?.Invoke(scale);
                 Close();
             };
+        }
+
+        public SetScaleView(System.Drawing.Point first, System.Drawing.Point second) : this()
+        {
+            Viewmodel.Points = (first, second);
+        }
+
+        public SetScaleView(Scale scale) : this()
+        {
+            Viewmodel.Points = (scale.First, scale.Second);
+            Viewmodel.ScaleUnit = scale.Unit;
+            Viewmodel.ScaleDistance = scale.EnteredDistance;
         }
     }
 }

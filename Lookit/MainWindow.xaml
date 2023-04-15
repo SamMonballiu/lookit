@@ -54,6 +54,33 @@
                     </Button.Style>
                     <Image Source="/Assets/ruler.png" />
                 </Button>
+                <Button Name="BtnEditScale" Click="BtnEditScale_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+
+                            <Setter Property="BorderThickness" Value="0 1 0 1"/>
+                            <Setter Property="Margin" Value="-8 0 8 0"/>
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding Scale.IsDefault}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/wrench.png">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
+                                <Style.Triggers>
+                                    <DataTrigger Value="True" Binding="{Binding Scale.IsDefault}">
+                                        <Setter Property="Opacity" Value=".5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Button>
                 <Button Name="BtnDeleteScale" Click="BtnDeleteScale_Click">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
@@ -70,7 +97,8 @@
                     <Image Source="/Assets/ruler-remove.png">
                         <Image.Style>
                             <Style TargetType="Image">
-                                
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
                                 <Style.Triggers>
                                     <DataTrigger Value="True" Binding="{Binding Scale.IsDefault}">
                                         <Setter Property="Opacity" Value=".5" />

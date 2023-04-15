@@ -99,9 +99,7 @@ namespace Lookit
                         if (Viewmodel.TempPoints.Count == 2)
                         {
                             var measurement = Viewmodel.LinePreview.Measurement as LineMeasurement;
-                            var view = new SetScaleView(measurement.Start, measurement.End);
-                            view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
-                            view.ShowDialog();
+                            OpenSetScale(measurement);
                         }
                         return;
                     }
@@ -114,6 +112,7 @@ namespace Lookit
                     break;
             }
         }
+
 
         private void BtnScale_Click(object sender, RoutedEventArgs e)
         {
@@ -224,6 +223,25 @@ namespace Lookit
         private void BtnDeleteScale_Click(object sender, RoutedEventArgs e)
         {
             Viewmodel.OnRemoveScale.Execute(null);
+        }
+
+        private void BtnEditScale_Click(object sender, RoutedEventArgs e)
+        {
+            OpenSetScale(Viewmodel.Scale);
+        }
+
+        private void OpenSetScale(LineMeasurement measurement)
+        {
+            var view = new SetScaleView(measurement.Start, measurement.End);
+            view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
+            view.ShowDialog();
+        }
+
+        private void OpenSetScale(Scale scale)
+        {
+            var view = new SetScaleView(scale);
+            view.OnConfirm += (Scale scale) => Viewmodel.OnSetScale?.Execute(scale);
+            view.ShowDialog();
         }
     }
 }

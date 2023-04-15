@@ -14,9 +14,11 @@
     <None Remove="Assets\folder_go.png" />
     <None Remove="Assets\line.png" />
     <None Remove="Assets\page_go.png" />
+    <None Remove="Assets\ruler-edit.png" />
     <None Remove="Assets\ruler-remove.png" />
     <None Remove="Assets\ruler.png" />
     <None Remove="Assets\shape_handles.png" />
+    <None Remove="Assets\wrench.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.Linq" />
@@ -46,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\tick.png" />
+    <Resource Include="Assets\wrench.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview1" />
