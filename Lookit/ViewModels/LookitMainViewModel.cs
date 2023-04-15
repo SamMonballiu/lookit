@@ -337,7 +337,7 @@ namespace Lookit.ViewModels
             OnRemoveScale = new RelayCommand(() => SetScale(null));
             OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
             {
-                if (_straighten && !IsControlDown() && _tempPoints.Count > 1)
+                if (_straighten && Mode is Mode.MeasurePolygon && !IsControlDown() && _tempPoints.Count > 1)
                 {
                     point = Align(_tempPoints.SkipLast(1).Last(), point);
 
