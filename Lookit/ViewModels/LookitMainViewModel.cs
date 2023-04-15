@@ -96,7 +96,7 @@ namespace Lookit.ViewModels
         private double _zoomLevel = 1;
 
         [ObservableProperty]
-        private Mode _mode = Mode.MeasurePolygon;
+        private Mode _mode = Mode.None;
 
         public IEnumerable<PolygonMeasurementViewModel> PolygonMeasurements => Measurements.OfType<PolygonMeasurementViewModel>();
         public IEnumerable<LineMeasurementViewModel> LineMeasurements => Measurements.OfType<LineMeasurementViewModel>();
