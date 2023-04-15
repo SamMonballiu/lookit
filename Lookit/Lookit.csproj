@@ -14,10 +14,11 @@
     <None Remove="Assets\folder_go.png" />
     <None Remove="Assets\line.png" />
     <None Remove="Assets\page_go.png" />
+    <None Remove="Assets\poly_add.png" />
     <None Remove="Assets\ruler-edit.png" />
     <None Remove="Assets\ruler-remove.png" />
     <None Remove="Assets\ruler.png" />
-    <None Remove="Assets\shape_handles.png" />
+    <None Remove="Assets\shape_square_add.png" />
     <None Remove="Assets\wrench.png" />
   </ItemGroup>
   <ItemGroup>
@@ -35,9 +36,10 @@
     <Resource Include="Assets\folder_go.png" />
     <Resource Include="Assets\line.png" />
     <Resource Include="Assets\page_go.png" />
+    <Resource Include="Assets\poly_add.png" />
     <Resource Include="Assets\ruler-remove.png" />
     <Resource Include="Assets\ruler.png" />
-    <Resource Include="Assets\shape_handles.png" />
+    <Resource Include="Assets\shape_square_add.png" />
     <Resource Include="Assets\test.GIF" />
   </ItemGroup>
   <ItemGroup>

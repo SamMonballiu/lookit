@@ -119,9 +119,9 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <Image Source="/Assets/shape_handles.png" />
+                    <Image Source="/Assets/poly_add.png" />
                 </Button>
-                <Button Name="BtnMeasureRect" Content="[RCT]"  Click="BtnMeasureRect_Click" ToolTip="Rect" Margin="0">
+                <Button Name="BtnMeasureRect" Click="BtnMeasureRect_Click" ToolTip="Rect" Margin="0">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
                             <Setter Property="BorderThickness" Value="0 1 0 1"/>
@@ -132,6 +132,7 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+                    <Image Source="/Assets/shape_square_add.png" />
                 </Button>
                 <Button Name="BtnMeasureLine" Click="BtnMeasureLine_Click">
                     <Button.Style>
