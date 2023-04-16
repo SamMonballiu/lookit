@@ -49,6 +49,9 @@ namespace Lookit.ViewModels
         private int _pageRotation = (int)Rotation.Zero;
 
         [ObservableProperty]
+        private bool _isPanning = false;
+
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
         [NotifyPropertyChangedFor(nameof(LineMeasurements))]
         [NotifyPropertyChangedFor(nameof(Measurements))]

@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         WindowState="Maximized"
         KeyUp="Window_KeyUp"
-        Title="MainWindow" Height="800" Width="800">
+        Title="Laika" Height="800" Width="800">
     <Window.Resources>
         <valueconverters:MeasurementToColorBrushConverter x:Key="measurementColorConverter" />
         <valueconverters:PointToThicknessConverter x:Key="pointToThicknessConverter" />
@@ -171,6 +171,22 @@
                     <Image Source="/Assets/shape_rotate_clockwise.png"/>
                 </Button>
 
+                <Button Name="BtnPan" 
+                        Click="BtnPan_Click"
+                        ToolTip="Pan"
+                        >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Value="True" Binding="{Binding IsPanning}">
+                                    <Setter Property="Background" Value="LightSteelBlue"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Image Source="/Assets/drag-drop-flaticon.png"/>
+                </Button>
+
                 <StackPanel VerticalAlignment="Center" Margin="0 0 12 0">
                     <CheckBox IsChecked="{Binding Straighten}">
                         Auto-align points
@@ -258,7 +274,16 @@
             </DockPanel>
             <DockPanel Grid.Column="1" Grid.Row="0">
                 
-                <ScrollViewer PreviewMouseWheel="ScrollViewer_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" MouseMove="ScrollViewer_MouseMove" Background="#ccc">
+                <ScrollViewer 
+                    Name="sv" 
+                    PreviewMouseWheel="ScrollViewer_MouseWheel" 
+                    HorizontalScrollBarVisibility="Auto" 
+                    VerticalScrollBarVisibility="Auto" 
+                    MouseMove="ScrollViewer_MouseMove" 
+                    Background="#ccc"
+                    KeyDown="sv_KeyDown"
+                    KeyUp="sv_KeyUp"
+                    >
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="#ccc">
                         <Grid.LayoutTransform>
                             <RotateTransform Angle="{Binding PageRotation}" 
@@ -278,7 +303,9 @@
                                 <Image Source="{Binding Path=ImageSource}" 
                                        HorizontalAlignment="Left" 
                                        VerticalAlignment="Top"   
-                                       Name="ImgMain" />
+                                       Name="ImgMain" 
+
+                                       />
                             </StackPanel>
                         </ContentControl>
 
@@ -390,7 +417,7 @@
                         <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <Canvas Cursor="Cross" Opacity="1" 
+                                    <Canvas Opacity="1" 
                                         MouseUp="ImgControl_OnMouseUp" 
                                         Name="CnvMeasure" 
                                         Grid.Row="0" Grid.Column="0"  
@@ -442,7 +469,7 @@
                         <ItemsControl ItemsSource="{Binding Path=LineMeasurements}" Grid.RowSpan="3">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <Canvas Cursor="Cross" Opacity="1" 
+                                    <Canvas
                                         MouseUp="ImgControl_OnMouseUp" 
                                         Name="CnvMeasure" 
                                         Grid.Row="0" Grid.Column="0"  

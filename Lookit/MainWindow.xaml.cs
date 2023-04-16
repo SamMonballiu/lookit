@@ -9,9 +9,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
-
+using System.Windows.Media;
 
 namespace Lookit
 {
@@ -37,6 +38,11 @@ namespace Lookit
         };
 
         private readonly KeyMap _keyboardBindings = new();
+
+        private Point _oldMousePosition = new ();
+
+        private bool _isPanning = false;
+
 
         public MainWindow()
         {
@@ -102,7 +108,7 @@ namespace Lookit
             Viewmodel.Mode = mode;
         }
 
-        private async void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void DdnPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             PageContext.SelectPage((int)ddnPages.SelectedValue);
             Viewmodel.SelectedPage = PageContext.SelectedPage;
@@ -131,6 +137,9 @@ namespace Lookit
 
         private void ImgControl_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (Viewmodel.IsPanning)
+                return;
+
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
@@ -261,7 +270,32 @@ namespace Lookit
 
         private void ScrollViewer_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            if (Viewmodel.IsPanning)
+            {
+                Point newMousePosition = Mouse.GetPosition(sv);
+                var increment = 10 * Viewmodel.ZoomLevel;
+
+                if (_isPanning || Mouse.LeftButton == MouseButtonState.Pressed)
+                {
+                    if (newMousePosition.Y < _oldMousePosition.Y)
+                        sv.ScrollToVerticalOffset(sv.VerticalOffset + increment);
+                    if (newMousePosition.Y > _oldMousePosition.Y)
+                        sv.ScrollToVerticalOffset(sv.VerticalOffset - increment);
+
+                    if (newMousePosition.X < _oldMousePosition.X)
+                        sv.ScrollToHorizontalOffset(sv.HorizontalOffset + increment);
+                    if (newMousePosition.X > _oldMousePosition.X)
+                        sv.ScrollToHorizontalOffset(sv.HorizontalOffset - increment);
+                    _oldMousePosition = newMousePosition;
+                }
+                else
+                {
+                    _oldMousePosition = newMousePosition;
+                }
+            }
+
             var pos = e.GetPosition(ImgMain);
+            
             if (Viewmodel.Mode is not Mode.None && Viewmodel.TempPoints.Count > 0)
             {
                 Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
@@ -301,6 +335,29 @@ namespace Lookit
         private void BtnRotate_Click(object sender, RoutedEventArgs e)
         {
             Viewmodel.OnRotate.Execute(sender == BtnRotateCCW ? Direction.CounterClockwise : Direction.Clockwise);
+        }
+
+        private void BtnPan_Click(object sender, RoutedEventArgs e)
+        {
+            Viewmodel.IsPanning = !Viewmodel.IsPanning;
+        }
+
+        private void sv_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && e.IsDown)
+            {
+                Viewmodel.IsPanning = true;
+                _isPanning = true;
+            }
+        }
+
+        private void sv_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                Viewmodel.IsPanning = false;
+                _isPanning = false;
+            }
         }
     }
 }
