@@ -281,8 +281,6 @@
                     VerticalScrollBarVisibility="Auto" 
                     MouseMove="ScrollViewer_MouseMove" 
                     Background="#ccc"
-                    KeyDown="sv_KeyDown"
-                    KeyUp="sv_KeyUp"
                     >
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Background="#ccc">
                         <Grid.LayoutTransform>

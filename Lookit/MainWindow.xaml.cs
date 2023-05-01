@@ -9,10 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
+using Cursors = System.Windows.Input.Cursors;
 
 namespace Lookit
 {
@@ -39,13 +38,18 @@ namespace Lookit
 
         private readonly KeyMap _keyboardBindings = new();
 
-        private Point _oldMousePosition = new ();
-
+        private Point _previousMousePosition = new();
+        private Point _currentMousePosition = new();
+        private Timer _panTimer = new();
         private bool _isPanning = false;
+        private Panning _panningHandler = new();
+        
 
 
         public MainWindow()
         {
+            _panTimer.Tick += PanTimer_Tick;
+            _panTimer.Interval = 1;
             InitializeComponent();
             this.DataContext = new LookitMainViewModel();
             zoomPicker.ZoomChanged += ZoomPicker_ZoomChanged;
@@ -61,6 +65,15 @@ namespace Lookit
                     //TODO Fix
                 }
             };
+        }
+
+        private void PanTimer_Tick(object sender, EventArgs e)
+        {
+            _panningHandler.Update(
+                Viewmodel.ZoomLevel, 
+                _previousMousePosition, 
+                _currentMousePosition, 
+                sv);
         }
 
         private void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -268,37 +281,70 @@ namespace Lookit
             Persist.PersistSession(persistableSession, filename);
         }
 
+        private void UpdatePanCursor(Point newPosition, Point oldPosition)
+        {
+            var canScrollHorizontal = sv.ComputedHorizontalScrollBarVisibility is Visibility.Visible;
+
+            if (newPosition.Y < oldPosition.Y)
+            {
+                sv.Cursor = newPosition switch
+                {
+                    { X: var x } when x < oldPosition.X && canScrollHorizontal => Cursors.ScrollNW,
+                    { X: var x } when x > oldPosition.X && canScrollHorizontal => Cursors.ScrollNE,
+                    _ => Cursors.ScrollN,
+                };
+            } else if (newPosition.Y > oldPosition.Y)
+            {
+                sv.Cursor = newPosition switch
+                {
+                    { X: var x } when x < oldPosition.X && canScrollHorizontal => Cursors.ScrollSW,
+                    { X: var x } when x > oldPosition.X && canScrollHorizontal => Cursors.ScrollSE,
+                    _ => Cursors.ScrollS
+                };
+            }
+        }
+
         private void ScrollViewer_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            var pos = e.GetPosition(ImgMain);
             if (Viewmodel.IsPanning)
             {
-                Point newMousePosition = Mouse.GetPosition(sv);
-                var increment = 10 * Viewmodel.ZoomLevel;
+                Point oldMousePosition = _previousMousePosition;
+                _currentMousePosition = Mouse.GetPosition(sv);
 
-                if (_isPanning || Mouse.LeftButton == MouseButtonState.Pressed)
+                if (_isPanning || Mouse.LeftButton is MouseButtonState.Pressed)
                 {
-                    if (newMousePosition.Y < _oldMousePosition.Y)
-                        sv.ScrollToVerticalOffset(sv.VerticalOffset + increment);
-                    if (newMousePosition.Y > _oldMousePosition.Y)
-                        sv.ScrollToVerticalOffset(sv.VerticalOffset - increment);
-
-                    if (newMousePosition.X < _oldMousePosition.X)
-                        sv.ScrollToHorizontalOffset(sv.HorizontalOffset + increment);
-                    if (newMousePosition.X > _oldMousePosition.X)
-                        sv.ScrollToHorizontalOffset(sv.HorizontalOffset - increment);
-                    _oldMousePosition = newMousePosition;
+                    _panTimer.Start();
+                    sv.CaptureMouse();
+                    UpdatePanCursor(_currentMousePosition, _previousMousePosition);
                 }
                 else
                 {
-                    _oldMousePosition = newMousePosition;
+                    _panTimer.Stop();
+                    sv.ReleaseMouseCapture();
+                    _previousMousePosition = _currentMousePosition;
                 }
             }
 
-            var pos = e.GetPosition(ImgMain);
-            
-            if (Viewmodel.Mode is not Mode.None && Viewmodel.TempPoints.Count > 0)
+            else if (Viewmodel.Mode is not Mode.None && Viewmodel.TempPoints.Count > 0)
             {
                 Viewmodel.OnUpdateTemporaryPoint.Execute(pos.ToPoint());
+                var tolerance = 100;
+                var shouldPan = pos.IsCloseToEdges(sv, tolerance);
+
+                Panning.UpdateManual(
+                    sv, 
+                    shouldPan.Right
+                        ? 0.25
+                        : shouldPan.Left 
+                            ? -0.25
+                            : 0, 
+                    shouldPan.Bottom
+                        ? 0.25
+                        : shouldPan.Top
+                            ? -0.25
+                            : 0
+                    );
             }
         }
 
@@ -340,24 +386,6 @@ namespace Lookit
         private void BtnPan_Click(object sender, RoutedEventArgs e)
         {
             Viewmodel.IsPanning = !Viewmodel.IsPanning;
-        }
-
-        private void sv_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.Space && e.IsDown)
-            {
-                Viewmodel.IsPanning = true;
-                _isPanning = true;
-            }
-        }
-
-        private void sv_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.Space)
-            {
-                Viewmodel.IsPanning = false;
-                _isPanning = false;
-            }
         }
     }
 }

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\disk.png" />
+    <None Remove="Assets\drag-drop-flaticon.png" />
     <None Remove="Assets\eye.png" />
     <None Remove="Assets\folder_go.png" />
     <None Remove="Assets\line.png" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\disk.png" />
+    <Resource Include="Assets\drag-drop-flaticon.png" />
     <Resource Include="Assets\eye.png" />
     <Resource Include="Assets\folder_go.png" />
     <Resource Include="Assets\line.png" />
