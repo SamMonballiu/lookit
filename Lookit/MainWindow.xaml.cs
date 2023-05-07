@@ -399,6 +399,9 @@ namespace Lookit
 
             var pos = e.GetPosition(ImgMain);
 
+            if (!Viewmodel.AllowPointDragging)
+                return;
+
             if (e.LeftButton is MouseButtonState.Pressed)
             {
                 // Determine the clicked measurement & point

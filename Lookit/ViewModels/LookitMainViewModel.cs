@@ -52,6 +52,9 @@ namespace Lookit.ViewModels
         private bool _isPanning = false;
 
         [ObservableProperty]
+        private bool _allowPointDragging = true;
+
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
         [NotifyPropertyChangedFor(nameof(LineMeasurements))]
         [NotifyPropertyChangedFor(nameof(Measurements))]
@@ -268,6 +271,10 @@ namespace Lookit.ViewModels
             });
             OnMoveMeasurementPoint = new RelayCommand<(MeasurementViewModel Measurement, int Index, Point Point)>(Data =>
             {
+                if (!_allowPointDragging)
+                {
+                    return;
+                }
                 var index = Measurements.IndexOf(Data.Measurement);
                 Measurements[index].Measurement.Points[Data.Index] = Data.Point;
                 OnPropertyChanged(nameof(Measurements));

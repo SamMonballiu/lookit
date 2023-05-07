@@ -191,8 +191,14 @@
                     <CheckBox IsChecked="{Binding Straighten}">
                         Auto-align points
                     </CheckBox>
-
                 </StackPanel>
+
+                <StackPanel VerticalAlignment="Center" Margin="0 0 12 0">
+                    <CheckBox IsChecked="{Binding AllowPointDragging}">
+                        Allow point dragging
+                    </CheckBox>
+                </StackPanel>
+                
                 <usercontrols:ZoomPicker x:Name="zoomPicker"/>
                 <StackPanel Margin="12 0 0 0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label>Mode:</Label>
