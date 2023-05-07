@@ -271,7 +271,8 @@ namespace Lookit.ViewModels
                     return;
                 }
 
-                var index = Measurements.IndexOf(Data.Measurement);
+                var measurements = Measurements.ToList();
+                var index = measurements.IndexOf(Data.Measurement);
                 var point = Data.Point;
                 if (_straighten)
                 {
@@ -282,7 +283,8 @@ namespace Lookit.ViewModels
                     }
                 }
 
-                Measurements[index].Measurement.Points[Data.Index] = point;
+                measurements[index].Measurement.Points[Data.Index] = point;
+                _pagedMeasurements[_selectedPage] = measurements.ToObservableCollection();
                 OnPropertyChanged(nameof(Measurements));
             });
         }
