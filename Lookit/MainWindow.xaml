@@ -343,7 +343,7 @@
                                     </Style>
                                 </Line.Style>
                             </Line>
-                            
+
                             <Ellipse Height="4" Width="4" Fill="Red" Margin="-2 -2 0 0" Canvas.Left="{Binding PolygonPreview.Origin.X}" Canvas.Top="{Binding PolygonPreview.Origin.Y}">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
@@ -417,6 +417,7 @@
                                 <ItemsPanelTemplate>
                                     <Canvas Opacity="1" 
                                         MouseUp="ImgControl_OnMouseUp" 
+                                            MouseMove="CnvEditPoints_MouseMove"
                                         Name="CnvMeasure" 
                                         Grid.Row="0" Grid.Column="0"  
                                         Background="Transparent"
@@ -431,8 +432,8 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Visibility="{Binding Path=Hidden, Converter={StaticResource booleanToVisibilityConverter}}">
-                                        <Polygon 
-                                            Points="{Binding Path=Points}" 
+                                        <Polygon
+                                            Points="{Binding Path=Points}"
                                             Opacity=".85" 
                                             StrokeThickness="2"
                                             >
@@ -469,6 +470,7 @@
                                 <ItemsPanelTemplate>
                                     <Canvas
                                         MouseUp="ImgControl_OnMouseUp" 
+                                        MouseMove="CnvEditPoints_MouseMove"
                                         Name="CnvMeasure" 
                                         Grid.Row="0" Grid.Column="0"  
                                         Background="Transparent"
@@ -518,6 +520,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
                     </Grid>
                 </ScrollViewer>
             </DockPanel>

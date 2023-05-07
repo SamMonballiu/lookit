@@ -43,8 +43,9 @@ namespace Lookit
         private Timer _panTimer = new();
         private bool _isPanning = false;
         private Panning _panningHandler = new();
-        
+        private (MeasurementViewModel Measurement, int Point) _lastClicked = (null, -1);
 
+        private bool IsDraggingPoint() => _lastClicked.Measurement is not null;
 
         public MainWindow()
         {
@@ -156,14 +157,13 @@ namespace Lookit
             switch (e.ChangedButton)
             {
                 case MouseButton.Left:
-                    if (Viewmodel.Mode is Mode.None)
+                    if (Viewmodel.Mode is Mode.None || this.IsDraggingPoint())
                     {
                         return;
                     }
                     if (Viewmodel.Mode is Mode.Scale)
                     {
                         var pos = e.GetPosition(ImgMain);
-
                         Viewmodel.OnAddPoint.Execute(pos.ToPoint());
 
                         if (Viewmodel.TempPoints.Count == 2)
@@ -386,6 +386,40 @@ namespace Lookit
         private void BtnPan_Click(object sender, RoutedEventArgs e)
         {
             Viewmodel.IsPanning = !Viewmodel.IsPanning;
+        }
+
+        private void CnvEditPoints_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            // forget last clicked point on button release
+            if (e.LeftButton is MouseButtonState.Released)
+            {
+                _lastClicked = (null, -1);
+                return;
+            }
+
+            var pos = e.GetPosition(ImgMain);
+
+            if (e.LeftButton is MouseButtonState.Pressed)
+            {
+                // Determine the clicked measurement & point
+                _lastClicked = _lastClicked.Measurement is null ? GetClicked() : _lastClicked;
+
+                if (_lastClicked.Point != -1)
+                {
+                    Viewmodel.OnMoveMeasurementPoint.Execute((_lastClicked.Measurement, _lastClicked.Point, pos.ToPoint()));
+                }
+            }
+
+            (MeasurementViewModel Measurement, int Point) GetClicked()
+            {
+                var clickedMeasurement = Viewmodel.Measurements
+                    .FirstOrDefault(m => m.Measurement.Points.Any(pt => pos.IsClose(pt)));
+
+                var clickedPoint = clickedMeasurement?.Measurement.Points
+                    .FirstOrDefault(pt => pos.IsClose(pt)) ?? System.Drawing.Point.Empty;
+
+                return (clickedMeasurement, clickedMeasurement?.Measurement.Points.IndexOf(clickedPoint) ?? -1);
+            }
         }
     }
 }

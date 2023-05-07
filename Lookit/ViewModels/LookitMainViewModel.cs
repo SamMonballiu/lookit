@@ -166,7 +166,116 @@ namespace Lookit.ViewModels
         public ICommand OnCancelMeasurement { get; private set; }
         public ICommand OnFinalizePreview { get; private set; }
         public ICommand OnRotate { get; private set; }
-        
+        public ICommand OnMoveMeasurementPoint { get; private set; }
+
+        public LookitMainViewModel()
+        {
+            OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
+            {
+                ImageSource = bitmap;
+            });
+            OnPasteImage = new RelayCommand(PasteImage);
+            OnAddPoint = new RelayCommand<Point>(AddPoint);
+            OnRemovePoint = new RelayCommand(RemoveLastPoint);
+            OnRemoveMeasurement = new RelayCommand<MeasurementViewModel>(measurement =>
+            {
+                Measurements.Remove(measurement);
+                OnPropertyChanged(nameof(PolygonMeasurements));
+                OnPropertyChanged(nameof(LineMeasurements));
+            });
+            OnToggleMeasurementHidden = new RelayCommand<MeasurementViewModel>(measurement =>
+            {
+                measurement.Hidden = !measurement.Hidden;
+            });
+            OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
+            OnSetScale = new RelayCommand<Scale>(SetScale);
+            OnRemoveScale = new RelayCommand(() => SetScale(null));
+            OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
+            {
+                if (_straighten && (Mode is not Mode.MeasureRectangle) && !IsControlDown() && _tempPoints.Count > 1)
+                {
+                    point = Align(_tempPoints.SkipLast(1).Last(), point);
+
+                    if (point.SharesAxisWith(PolygonPreview.Origin))
+                    {
+                        point = Align(PolygonPreview.Origin, point);
+                    }
+                }
+
+                if (TempPoints.Count == 1)
+                {
+                    TempPoints.Add(point);
+                }
+                else
+                {
+                    if (_mode is Mode.MeasureRectangle)
+                    {
+                        var firstPoint = TempPoints.First();
+                        var points = new List<Point>
+                        {
+                            firstPoint,
+                            new Point(firstPoint.X, point.Y),
+                            point,
+                            new Point(point.X, firstPoint.Y),
+                        };
+                        TempPoints = points.ToObservableCollection();
+                    }
+                    else
+                    {
+                        TempPoints[^1] = point;
+                    }
+                }
+
+                OnPropertyChanged(nameof(TempPoints));
+                OnPropertyChanged(nameof(LinePreview));
+                if (_mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
+                {
+                    OnPropertyChanged(nameof(PolygonPreview));
+                }
+            });
+            OnCancelMeasurement = new RelayCommand(() =>
+            {
+                if (_mode is Mode.None || !TempPoints.Any())
+                {
+                    return;
+                }
+
+                TempPoints.Clear();
+                OnPropertyChanged(nameof(LinePreview));
+                OnPropertyChanged(nameof(PolygonPreview));
+                Mode = Mode.None;
+            });
+            OnFinalizePreview = new RelayCommand(() =>
+            {
+                if (Mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
+                {
+                    var points = Mode switch
+                    {
+                        Mode.MeasurePolygon => TempPoints.SkipLast(1).ToList(),
+                        _ => TempPoints.ToList()
+                    };
+
+                    var measurement = new PolygonalMeasurement(points);
+                    Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count + 1}"));
+                    TempPoints.Clear();
+                    OnPropertyChanged(nameof(PolygonMeasurements));
+                    OnPropertyChanged(nameof(PolygonPreview));
+                }
+            });
+            OnRotate = new RelayCommand<Direction>(direction =>
+            {
+                Rotate(direction);
+            });
+            OnMoveMeasurementPoint = new RelayCommand<(MeasurementViewModel Measurement, int Index, Point Point)>(Data =>
+            {
+                var index = Measurements.IndexOf(Data.Measurement);
+                Measurements[index].Measurement.Points[Data.Index] = Data.Point;
+                OnPropertyChanged(nameof(Measurements));
+                OnPropertyChanged(nameof(PolygonMeasurements));
+                OnPropertyChanged(nameof(LineMeasurements));
+            });
+        }
+
         public static bool IsControlDown()
         {
             return (Control.ModifierKeys & Keys.Control) == Keys.Control;
@@ -361,104 +470,7 @@ namespace Lookit.ViewModels
             OnPropertyChanged(nameof(PageRotation));
         }
 
-        public LookitMainViewModel()
-        {
-            OnSetImageSource = new RelayCommand<BitmapSource>((bitmap) =>
-            {
-                ImageSource = bitmap;
-            });
-            OnPasteImage = new RelayCommand(PasteImage);
-            OnAddPoint = new RelayCommand<Point>(AddPoint);
-            OnRemovePoint = new RelayCommand(RemoveLastPoint);
-            OnRemoveMeasurement = new RelayCommand<MeasurementViewModel>(measurement =>
-            {
-                Measurements.Remove(measurement);
-                OnPropertyChanged(nameof(PolygonMeasurements));
-                OnPropertyChanged(nameof(LineMeasurements));
-            });
-            OnToggleMeasurementHidden = new RelayCommand<MeasurementViewModel>(measurement =>
-            {
-                measurement.Hidden = !measurement.Hidden;
-            });
-            OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
-            OnSetScale = new RelayCommand<Scale>(SetScale);
-            OnRemoveScale = new RelayCommand(() => SetScale(null));
-            OnUpdateTemporaryPoint = new RelayCommand<Point>(point =>
-            {
-                if (_straighten && (Mode is not Mode.MeasureRectangle) && !IsControlDown() && _tempPoints.Count > 1)
-                {
-                    point = Align(_tempPoints.SkipLast(1).Last(), point);
-
-                    if (point.SharesAxisWith(PolygonPreview.Origin))
-                    {
-                        point = Align(PolygonPreview.Origin, point);
-                    }
-                }
-
-                if (TempPoints.Count == 1)
-                {
-                    TempPoints.Add(point);
-                } else
-                {
-                    if (_mode is Mode.MeasureRectangle)
-                    {
-                        var firstPoint = TempPoints.First();
-                        var points = new List<Point>
-                        {
-                            firstPoint,
-                            new Point(firstPoint.X, point.Y),
-                            point,
-                            new Point(point.X, firstPoint.Y),
-                        };
-                        TempPoints = points.ToObservableCollection();
-                    } else
-                    {
-                        TempPoints[^1] = point;
-                    }
-                }
-
-                OnPropertyChanged(nameof(TempPoints));
-                OnPropertyChanged(nameof(LinePreview));
-                if (_mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
-                {
-                    OnPropertyChanged(nameof(PolygonPreview));
-                }
-            });
-            OnCancelMeasurement = new RelayCommand(() =>
-            {
-                if (_mode is Mode.None || !TempPoints.Any())
-                {
-                    return;
-                }
-
-                TempPoints.Clear();
-                OnPropertyChanged(nameof(LinePreview));
-                OnPropertyChanged(nameof(PolygonPreview));
-                Mode = Mode.None;
-            });
-            OnFinalizePreview = new RelayCommand(() =>
-            {
-                if (Mode is Mode.MeasurePolygon or Mode.MeasureRectangle)
-                {
-                    var points = Mode switch
-                    {
-                        Mode.MeasurePolygon => TempPoints.SkipLast(1).ToList(),
-                        _ => TempPoints.ToList()
-                    };
-
-                    var measurement = new PolygonalMeasurement(points);
-                    Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count + 1}"));
-                    TempPoints.Clear();
-                    OnPropertyChanged(nameof(PolygonMeasurements));
-                    OnPropertyChanged(nameof(PolygonPreview));
-                }
-            });
-            OnRotate = new RelayCommand<Direction>(direction =>
-            {
-                Rotate(direction);
-            });
-
-        }
+        
 
         public LookitMainViewModel(Dictionary<int, List<PersistableMeasurement>> pagedMeasurements, Dictionary<int, PersistableScale> pagedScales): this()
         {
