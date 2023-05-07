@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lookit" xmlns:usercontrols="clr-namespace:Lookit.UserControls"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:viewmodels="clr-namespace:Lookit.ViewModels" 
         xmlns:valueconverters="clr-namespace:Lookit.ValueConverters"
         d:DataContext="{d:DesignInstance Type=viewmodels:LookitMainViewModel}"
@@ -19,6 +20,10 @@
         <valueconverters:LinePreviewStrokeConverter x:Key="linePreviewStrokeConverter" />
         <valueconverters:ElementCenterConverter x:Key="elementCenterConverter" />
         <valueconverters:LabelRotationConverter x:Key="rotationConverter" />
+        <valueconverters:MeasurementPointsConverter x:Key="measurementPointsConverter" />
+        <valueconverters:MeasurementsTypeConverter x:Key="measurementsTypeConverter" />
+        <sys:String x:Key="Lines">Lines</sys:String>
+        <sys:String x:Key="Polygons">Polygons</sys:String>
     </Window.Resources>
     <DockPanel>
         <Border DockPanel.Dock="Top" BorderBrush="#424b54" BorderThickness="0 0 0 1">
@@ -418,7 +423,16 @@
                             </Label>
                         </Canvas>
 
-                        <ItemsControl ItemsSource="{Binding Path=PolygonMeasurements}" Grid.RowSpan="3">
+                        
+
+                        <!-- POLYGON MEASUREMENTS -->
+                        <ItemsControl Grid.RowSpan="3">
+                            <ItemsControl.ItemsSource>
+                                <MultiBinding Converter="{StaticResource measurementsTypeConverter}">
+                                    <Binding Path="Measurements"/>
+                                    <Binding Source="{StaticResource Polygons}"/>
+                                </MultiBinding>
+                            </ItemsControl.ItemsSource>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <Canvas Opacity="1" 
@@ -441,7 +455,8 @@
                                         <Polygon
                                             Points="{Binding Path=Points}"
                                             Opacity=".85" 
-                                            StrokeThickness="2"
+                                            StrokeThickness="3"
+                                            Stroke="Red"
                                             >
                                             <Polygon.Fill>
                                                 <MultiBinding Converter="{StaticResource measurementColorConverter}">
@@ -449,6 +464,7 @@
                                                     <Binding Path="DataContext.SelectedMeasurement" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
                                                 </MultiBinding>
                                             </Polygon.Fill>
+                                            
                                         </Polygon>
                                         <Label FontSize="18" Name="label" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
                                             <Label.LayoutTransform>
@@ -471,7 +487,14 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <ItemsControl ItemsSource="{Binding Path=LineMeasurements}" Grid.RowSpan="3">
+                        <!-- LINE MEASUREMENTS -->
+                        <ItemsControl Grid.RowSpan="3">
+                            <ItemsControl.ItemsSource>
+                                <MultiBinding Converter="{StaticResource measurementsTypeConverter}">
+                                    <Binding Path="Measurements"/>
+                                    <Binding Source="{StaticResource Lines}"/>
+                                </MultiBinding>
+                            </ItemsControl.ItemsSource>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <Canvas
@@ -523,6 +546,31 @@
                                             </Label.Margin>
                                         </Label>
                                     </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- MEASUREMENT POINTS -->
+                        <ItemsControl ItemsSource="{Binding Path=Measurements, Converter={StaticResource measurementPointsConverter}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas Background="Transparent"
+                                            MouseUp="ImgControl_OnMouseUp" 
+                                        MouseMove="CnvEditPoints_MouseMove">
+                                        <Canvas.LayoutTransform>
+                                            <ScaleTransform ScaleX="{Binding Path=ZoomLevel}" ScaleY="{Binding Path=ZoomLevel}" CenterX="0" CenterY="0" />
+                                        </Canvas.LayoutTransform>
+                                    </Canvas>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Path Name="Circle" Fill="Red">
+                                        <Path.Data>
+                                            <EllipseGeometry Center="{Binding}" RadiusX="3" RadiusY="3"/>
+                                        </Path.Data>
+                                    </Path>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

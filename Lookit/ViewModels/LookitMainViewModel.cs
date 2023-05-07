@@ -55,8 +55,6 @@ namespace Lookit.ViewModels
         private bool _allowPointDragging = true;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(PolygonMeasurements))]
-        [NotifyPropertyChangedFor(nameof(LineMeasurements))]
         [NotifyPropertyChangedFor(nameof(Measurements))]
         [NotifyPropertyChangedFor(nameof(Scale))]
         protected int _selectedPage = 1;
@@ -140,9 +138,6 @@ namespace Lookit.ViewModels
         [ObservableProperty]
         private Mode _mode = Mode.None;
 
-        public IEnumerable<PolygonMeasurementViewModel> PolygonMeasurements => Measurements.OfType<PolygonMeasurementViewModel>();
-        public IEnumerable<LineMeasurementViewModel> LineMeasurements => Measurements.OfType<LineMeasurementViewModel>();
-
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LinePreview))]
         private ObservableCollection<Point> _tempPoints = new();
@@ -183,12 +178,12 @@ namespace Lookit.ViewModels
             OnRemoveMeasurement = new RelayCommand<MeasurementViewModel>(measurement =>
             {
                 Measurements.Remove(measurement);
-                OnPropertyChanged(nameof(PolygonMeasurements));
-                OnPropertyChanged(nameof(LineMeasurements));
+                OnPropertyChanged(nameof(Measurements));
             });
             OnToggleMeasurementHidden = new RelayCommand<MeasurementViewModel>(measurement =>
             {
                 measurement.Hidden = !measurement.Hidden;
+                OnPropertyChanged(nameof(Measurements));
             });
             OnSwitchMode = new RelayCommand<Mode>(mode => Mode = mode);
             OnSetScale = new RelayCommand<Scale>(SetScale);
@@ -261,7 +256,7 @@ namespace Lookit.ViewModels
                     var measurement = new PolygonalMeasurement(points);
                     Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count + 1}"));
                     TempPoints.Clear();
-                    OnPropertyChanged(nameof(PolygonMeasurements));
+                    OnPropertyChanged(nameof(Measurements));
                     OnPropertyChanged(nameof(PolygonPreview));
                 }
             });
@@ -289,8 +284,6 @@ namespace Lookit.ViewModels
 
                 Measurements[index].Measurement.Points[Data.Index] = point;
                 OnPropertyChanged(nameof(Measurements));
-                OnPropertyChanged(nameof(PolygonMeasurements));
-                OnPropertyChanged(nameof(LineMeasurements));
             });
         }
 
@@ -348,7 +341,7 @@ namespace Lookit.ViewModels
                 var measurement = new LineMeasurement(_tempPoints.First(), point);
                 Measurements.Add(new LineMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 TempPoints.Clear();
-                OnPropertyChanged(nameof(LineMeasurements));
+                OnPropertyChanged(nameof(Measurements));
                 OnPropertyChanged(nameof(LinePreview));
                 Mode = Mode.None;
                 return;
@@ -381,7 +374,7 @@ namespace Lookit.ViewModels
                 var measurement = new PolygonalMeasurement(points);
                 Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 TempPoints.Clear();
-                OnPropertyChanged(nameof(PolygonMeasurements));
+                OnPropertyChanged(nameof(Measurements));
             }
             OnPropertyChanged(nameof(PolygonPreview));
         }
@@ -402,7 +395,7 @@ namespace Lookit.ViewModels
                 var measurement = new PolygonalMeasurement(TempPoints.SkipLast(1).ToList());
                 Measurements.Add(new PolygonMeasurementViewModel(measurement, Scale, $"Item {Measurements.Count() + 1}"));
                 TempPoints.Clear();
-                OnPropertyChanged(nameof(PolygonMeasurements));
+                OnPropertyChanged(nameof(Measurements));
             }
             OnPropertyChanged(nameof(PolygonPreview));
         }
