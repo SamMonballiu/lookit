@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace Lookit.Logic
@@ -41,6 +43,15 @@ namespace Lookit.Logic
             }
 
             return point;
+        }
+
+        public static IEnumerable<System.Drawing.Point> Except(this IEnumerable<System.Drawing.Point> points, int index)
+        {
+            if (index > points.Count() - 1 || index < 0)
+            {
+                return points;
+            }
+            return points.Except(new[] { points.ElementAt(index) });
         }
     }
 }

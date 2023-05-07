@@ -275,8 +275,19 @@ namespace Lookit.ViewModels
                 {
                     return;
                 }
+
                 var index = Measurements.IndexOf(Data.Measurement);
-                Measurements[index].Measurement.Points[Data.Index] = Data.Point;
+                var point = Data.Point;
+                if (_straighten)
+                {
+                    var commonAxes = Data.Measurement.Measurement.Points.Except(Data.Index).Where(pt => pt.SharesAxisWith(point));
+                    foreach(var commonAxis in commonAxes)
+                    {
+                        point = Align(commonAxis, point);
+                    }
+                }
+
+                Measurements[index].Measurement.Points[Data.Index] = point;
                 OnPropertyChanged(nameof(Measurements));
                 OnPropertyChanged(nameof(PolygonMeasurements));
                 OnPropertyChanged(nameof(LineMeasurements));
