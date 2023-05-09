@@ -393,6 +393,10 @@ namespace Lookit
             // forget last clicked point on button release
             if (e.LeftButton is MouseButtonState.Released)
             {
+                if (_lastClicked.Measurement is not null)
+                {
+                    Viewmodel.OnReleaseMeasurementPoint.Execute(null);
+                }
                 _lastClicked = (null, -1);
                 return;
             }
@@ -409,7 +413,7 @@ namespace Lookit
 
                 if (_lastClicked.Point != -1)
                 {
-                    Viewmodel.OnMoveMeasurementPoint.Execute((_lastClicked.Measurement, _lastClicked.Point, pos.ToPoint()));
+                    Viewmodel.OnDragMeasurementPoint.Execute((_lastClicked.Measurement, _lastClicked.Point, pos.ToPoint()));
                 }
             }
 

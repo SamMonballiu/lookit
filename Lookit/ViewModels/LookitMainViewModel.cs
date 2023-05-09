@@ -164,7 +164,8 @@ namespace Lookit.ViewModels
         public ICommand OnCancelMeasurement { get; private set; }
         public ICommand OnFinalizePreview { get; private set; }
         public ICommand OnRotate { get; private set; }
-        public ICommand OnMoveMeasurementPoint { get; private set; }
+        public ICommand OnDragMeasurementPoint { get; private set; }
+        public ICommand OnReleaseMeasurementPoint { get; private set; }
 
         public LookitMainViewModel()
         {
@@ -264,29 +265,35 @@ namespace Lookit.ViewModels
             {
                 Rotate(direction);
             });
-            OnMoveMeasurementPoint = new RelayCommand<(MeasurementViewModel Measurement, int Index, Point Point)>(Data =>
+            OnDragMeasurementPoint = new RelayCommand<(MeasurementViewModel Measurement, int Index, Point Point)>(Data =>
             {
                 if (!_allowPointDragging)
                 {
                     return;
                 }
 
-                var measurements = Measurements.ToList();
-                var index = measurements.IndexOf(Data.Measurement);
+                var index = Measurements.IndexOf(Data.Measurement);
                 var point = Data.Point;
+                var otherPoints = Data.Measurement.Measurement.Points.Except(Data.Index);
+
                 if (_straighten)
                 {
-                    var commonAxes = Data.Measurement.Measurement.Points.Except(Data.Index).Where(pt => pt.SharesAxisWith(point));
+                    var commonAxes = otherPoints.Where(pt => pt.SharesAxisWith(point));
                     foreach(var commonAxis in commonAxes)
                     {
                         point = Align(commonAxis, point);
                     }
                 }
 
-                measurements[index].Measurement.Points[Data.Index] = point;
-                _pagedMeasurements[_selectedPage] = measurements.ToObservableCollection();
+                Measurements[index].Measurement.Points[Data.Index] = point;
                 OnPropertyChanged(nameof(Measurements));
             });
+            OnReleaseMeasurementPoint = new RelayCommand(() =>
+            {
+                _pagedMeasurements[_selectedPage] = Measurements.ToObservableCollection();
+                OnPropertyChanged(nameof(Measurements));
+            });
+
         }
 
         public static bool IsControlDown()
