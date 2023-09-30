@@ -456,15 +456,13 @@
                                             Points="{Binding Path=Points}"
                                             Opacity=".85" 
                                             StrokeThickness="3"
-                                            Stroke="Red"
                                             >
-                                            <Polygon.Fill>
+                                            <Polygon.Stroke>
                                                 <MultiBinding Converter="{StaticResource measurementColorConverter}">
-                                                    <Binding Path="Measurement" />
+                                                    <Binding />
                                                     <Binding Path="DataContext.SelectedMeasurement" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window}" />
                                                 </MultiBinding>
-                                            </Polygon.Fill>
-                                            
+                                            </Polygon.Stroke>
                                         </Polygon>
                                         <Label FontSize="18" Name="label" FontWeight="Bold" Background="#ddd" Content="{Binding Path=Value}" Width="120" Height="30" Opacity=".75" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top">
                                             <Label.LayoutTransform>
@@ -514,11 +512,11 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Visibility="{Binding Path=Hidden, Converter={StaticResource booleanToVisibilityConverter}}">
-                                        <Line DataContext="{Binding Measurement}" x:Name="line" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
-                                            X1="{Binding Start.X}" 
-                                            Y1="{Binding Start.Y}"
-                                            X2="{Binding End.X}"
-                                            Y2="{Binding End.Y}">
+                                        <Line DataContext="{Binding}" x:Name="line" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                            X1="{Binding Measurement.Start.X}" 
+                                            Y1="{Binding Measurement.Start.Y}"
+                                            X2="{Binding Measurement.End.X}"
+                                            Y2="{Binding Measurement.End.Y}">
                                             <Line.Stroke>
                                                 <MultiBinding Converter="{StaticResource measurementColorConverter}">
                                                     <Binding />

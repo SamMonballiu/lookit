@@ -1,5 +1,6 @@
 ﻿using Lookit.Context;
 using Lookit.Models;
+using Lookit.ViewModels;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -13,14 +14,14 @@ namespace Lookit.ValueConverters
         {
             try
             {
-                var measurement = (Measurement)values[0];
+                var viewmodel = (MeasurementViewModel)values[0];
                 var selectedMeasurement = (Measurement)values[1];
 
-                return measurement.Equals(selectedMeasurement) ? Brushes.Aqua : Brushes.CornflowerBlue;
+                return viewmodel.Measurement.Equals(selectedMeasurement) ? Brushes.Aqua : Brushes.Red;
             }
             catch
             {
-                return Brushes.CornflowerBlue;
+                return Brushes.Pink;
             }
         }
 
